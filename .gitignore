@@ -1,0 +1,7 @@
+.aider*
+
+# Environment variables
+.env*
+
+# Mac files
+.DS_Store
