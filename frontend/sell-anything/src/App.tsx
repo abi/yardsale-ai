@@ -1,26 +1,27 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
+import { Button } from "./components/ui/button";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const signIn = () => {
+    alert("Sign in");
+  };
 
   return (
     <>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+      <div className="w-full xl:w-[1000px] mx-auto mt-4">
+        {/* Navbar */}
+        <nav className="border-b border-gray-200 px-4 py-2">
+          <div className="flex justify-between items-center">
+            <div className="text-lg font-semibold">Sell Anything</div>
+            <div className="flex items-center space-x-4">
+              <Button variant="secondary" onClick={signIn}>
+                Sign in
+              </Button>
+              <Button onClick={signIn}>Get started</Button>
+            </div>
+          </div>
+        </nav>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   );
 }
