@@ -4,5 +4,8 @@ import os
 # Used as a feature flag to enable or disable certain features
 IS_PROD = os.environ.get("IS_PROD", False)
 
-
+# OpenAI API key
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+
+# Sentry configuration
+SENTRY_DSN = os.environ.get("SENTRY_DSN")

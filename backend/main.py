@@ -4,17 +4,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes import home
-from config import IS_PROD
+from config import IS_PROD, SENTRY_DSN
 
 # Setup Sentry (only relevant in prod)
 if IS_PROD:
     import sentry_sdk
 
-    SENTRY_DSN = os.environ.get("SENTRY_DSN")
     if not SENTRY_DSN:
         raise Exception("SENTRY_DSN not found in prod environment")
 
