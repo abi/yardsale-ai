@@ -1,0 +1,13 @@
+{
+  "include": [
+    "**/*.py" // This line includes all Python files in the repository
+  ],
+  "exclude": [
+    "**/__pycache__", // Excludes Python cache directories
+    "**/node_modules", // Excludes node_modules folders, common in web projects
+    "**/.venv", // Excludes virtual environments; adjust if your venv has a different name
+    "**/.git" // Excludes Git directories
+  ],
+  // Strict
+  "typeCheckingMode": "strict"
+}

@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 from config import OPENAI_API_KEY
 from llms.core import stream_openai_response
-
+from openai.types.chat import ChatCompletionMessageParam
 
 router = APIRouter()
 
@@ -10,9 +10,12 @@ router = APIRouter()
 @router.get("/")
 async def get_status():
     openai_api_key = OPENAI_API_KEY
+    if not openai_api_key:
+        raise ValueError("OpenAI API key is not set")
+
     openai_base_url = None
 
-    prompt_messages = [
+    prompt_messages: list[ChatCompletionMessageParam] = [
         {
             "role": "system",
             "content": "Welcome to the Sell Anything app. What would you like to sell today?",
