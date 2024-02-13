@@ -1,9 +1,19 @@
 import "./App.css";
 import { Button } from "./components/ui/button";
+import { HTTP_BACKEND_URL } from "./config";
+import { useAuthenticatedFetch } from "./hooks/useAuthenticatedFetch";
 
 function App() {
+  const fetch = useAuthenticatedFetch();
+
   const signIn = () => {
     alert("Sign in");
+  };
+
+  const analyze = async () => {
+    await fetch(`${HTTP_BACKEND_URL}/analyze`, "POST", {
+      video: "test",
+    });
   };
 
   return (
@@ -21,6 +31,8 @@ function App() {
             </div>
           </div>
         </nav>
+
+        <Button onClick={analyze}>Analyze</Button>
       </div>
     </>
   );

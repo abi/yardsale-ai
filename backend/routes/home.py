@@ -9,6 +9,14 @@ router = APIRouter()
 
 @router.get("/")
 async def get_status():
+    return HTMLResponse(
+        content="<h3>Your backend is running correctly. Please open the front-end URL (default is http://localhost:5173) to use sell anything.</h3>"
+    )
+
+
+@router.post("/analyze")
+async def analyze_item(item: dict[str, str]):
+
     openai_api_key = OPENAI_API_KEY
     if not openai_api_key:
         raise ValueError("OpenAI API key is not set")
@@ -35,6 +43,11 @@ async def get_status():
 
     print(completion)
 
-    return HTMLResponse(
-        content="<h3>Your backend is running correctly. Please open the front-end URL (default is http://localhost:5173) to use sell anything.</h3>"
-    )
+    # Placeholder for item analysis logic
+    # In a real scenario, you would implement the logic to analyze the item details
+    # For now, we will just return a success message with the received item details
+    return {
+        "status": "success",
+        "message": "Item analysis is not implemented yet",
+        "item": item,
+    }
