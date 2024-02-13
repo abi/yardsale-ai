@@ -1,8 +1,9 @@
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
+from llms.prompts.analysis import SYSTEM_PROMPT
 from config import OPENAI_API_KEY
 from llms.core import stream_openai_response
-from openai.types.chat import ChatCompletionMessageParam
+from openai.types.chat import ChatCompletionMessageParam, ChatCompletionContentPartParam
 
 router = APIRouter()
 
@@ -14,6 +15,28 @@ async def get_status():
     )
 
 
+def generate_prompt(image_data_url: str):
+    user_content: list[ChatCompletionContentPartParam] = [
+        {
+            "type": "image_url",
+            "image_url": {"url": image_data_url, "detail": "high"},
+        }
+    ]
+
+    prompt_messages: list[ChatCompletionMessageParam] = [
+        {
+            "role": "system",
+            "content": SYSTEM_PROMPT,
+        },
+        {
+            "role": "user",
+            "content": user_content,
+        },
+    ]
+
+    return prompt_messages
+
+
 @router.post("/analyze")
 async def analyze_item(item: dict[str, str]):
 
@@ -23,16 +46,11 @@ async def analyze_item(item: dict[str, str]):
 
     openai_base_url = None
 
-    prompt_messages: list[ChatCompletionMessageParam] = [
-        {
-            "role": "system",
-            "content": "Welcome to the Sell Anything app. What would you like to sell today?",
-        }
-    ]
+    image_data_url = "https://images.unsplash.com/photo-1581539250439-c96689b516dd?q=80&w=2586&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    prompt_messages = generate_prompt(image_data_url)
 
     async def process_chunk(chunk: str):
-        # print(chunk)
-        pass
+        print(chunk, end="", flush=True)
 
     completion = await stream_openai_response(
         prompt_messages,
