@@ -1,8 +1,9 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import "./App.css";
 import { Button } from "./components/ui/button";
 import { HTTP_BACKEND_URL } from "./config";
 import { useAuthenticatedFetch } from "./hooks/useAuthenticatedFetch";
+import { useImageLoader } from "./hooks/useImageLoader";
 
 interface Listing {
   title: string;
@@ -17,16 +18,16 @@ function App() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const fetch = useAuthenticatedFetch();
+  const customFetch = useAuthenticatedFetch();
+  const testImageDataUrl = useImageLoader("/product_images/plant.jpg");
 
   const signIn = () => {
     alert("Sign in");
   };
 
   const analyze = async () => {
-    const res = await fetch(`${HTTP_BACKEND_URL}/analyze`, "POST", {
-      imageUrl:
-        "https://images.unsplash.com/photo-1581539250439-c96689b516dd?q=80&w=2586&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    const res = await customFetch(`${HTTP_BACKEND_URL}/analyze`, "POST", {
+      imageUrl: testImageDataUrl,
       audioDescription:
         "https://sdxl-trainings.s3.amazonaws.com/sample+audio.m4a",
     });
@@ -76,6 +77,11 @@ function App() {
           </div>
         </nav>
 
+        <img
+          src={testImageDataUrl}
+          alt="Example"
+          style={{ maxHeight: "200px" }}
+        />
         <Button onClick={analyze}>Analyze</Button>
 
         {listing && (
