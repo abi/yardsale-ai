@@ -51,7 +51,10 @@ async def analyze_item(item: dict[str, str]):
 
     openai_base_url = None
 
-    image_data_url = "https://images.unsplash.com/photo-1581539250439-c96689b516dd?q=80&w=2586&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    image_data_url = item.get("imageUrl")
+    if not image_data_url:
+        raise ValueError("Image data URL is not provided")
+
     prompt_messages = generate_prompt(
         image_data_url,
         """
