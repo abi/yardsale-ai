@@ -1,3 +1,4 @@
+import base64
 from typing import Awaitable, Callable, List
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletionMessageParam, ChatCompletionChunk
@@ -49,15 +50,21 @@ async def transcribe(
     base_url: str | None,
 ) -> str:
 
-    # Fetch the audio file
-    async with httpx.AsyncClient() as client:
-        response = await client.get(audio_url)
-        audio_data = response.content
+    # Check if the URL is a base64 string
+    if audio_url.startswith("data:"):
+        # Extract the base64 encoded data
+        base64_data = audio_url.split(",")[1]
+        audio_data = base64.b64decode(base64_data)
+        filename = "transcription.m4a"
+    else:
+        # Fetch the audio file from a regular URL
+        async with httpx.AsyncClient() as client:
+            response = await client.get(audio_url)
+            audio_data = response.content
+            filename = audio_url.split("/")[-1]
 
-    # Convert bytes to a file-like object and extract the filename
-    # This is necessary for OpenAI to not throw an error
+    # Convert bytes to a file-like object
     audio_file = BytesIO(audio_data)
-    filename = audio_url.split("/")[-1]
 
     openai_client = AsyncOpenAI(api_key=api_key, base_url=base_url)
     transcribed_audio = await openai_client.audio.transcriptions.create(

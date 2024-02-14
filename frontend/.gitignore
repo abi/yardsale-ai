@@ -25,3 +25,4 @@ dist-ssr
 
 # Testing files
 public/product_images/*
+public/product_audios/*

@@ -90,11 +90,14 @@ async def analyze_item(item: dict[str, str]):
     openai_base_url = None
 
     # Params
+    # TODO: Rename these params
     image_data_url = item["imageUrl"]
-    audio_url = item["audioDescription"]
+    audio_data_url = item["audioDescription"]
 
     # Transcribe the audio description
-    transcribed_audio = await transcribe(audio_url, openai_api_key, openai_base_url)
+    transcribed_audio = await transcribe(
+        audio_data_url, openai_api_key, openai_base_url
+    )
 
     print(transcribed_audio)
 

@@ -1,9 +1,9 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import "./App.css";
 import { Button } from "./components/ui/button";
 import { HTTP_BACKEND_URL } from "./config";
 import { useAuthenticatedFetch } from "./hooks/useAuthenticatedFetch";
-import { useImageLoader } from "./hooks/useImageLoader";
+import { useMediaLoader } from "./hooks/useMediaLoader";
 
 interface Listing {
   title: string;
@@ -19,7 +19,8 @@ function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const customFetch = useAuthenticatedFetch();
-  const testImageDataUrl = useImageLoader("/product_images/plant.jpg");
+  const testImageDataUrl = useMediaLoader("/product_images/plant.jpg");
+  const testAudioDataUrl = useMediaLoader("/product_audios/plant.m4a");
 
   const signIn = () => {
     alert("Sign in");
@@ -28,8 +29,7 @@ function App() {
   const analyze = async () => {
     const res = await customFetch(`${HTTP_BACKEND_URL}/analyze`, "POST", {
       imageUrl: testImageDataUrl,
-      audioDescription:
-        "https://sdxl-trainings.s3.amazonaws.com/sample+audio.m4a",
+      audioDescription: testAudioDataUrl,
     });
 
     setListing(res.response);
