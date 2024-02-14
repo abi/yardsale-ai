@@ -45,19 +45,16 @@ def generate_prompt(image_data_url: str, user_description: str):
 @router.post("/analyze")
 async def analyze_item(item: dict[str, str]):
 
+    # OpenAI setup
     openai_api_key = OPENAI_API_KEY
     if not openai_api_key:
         raise ValueError("OpenAI API key is not set")
 
     openai_base_url = None
 
-    image_data_url = item.get("imageUrl")
-    if not image_data_url:
-        raise ValueError("Image data URL is not provided")
-
-    audio_description = item.get("audioDescription")
-    if not audio_description:
-        raise ValueError("Audio description is not provided")
+    # Params
+    image_data_url = item["imageUrl"]
+    audio_description = item["audioDescription"]
 
     prompt_messages = generate_prompt(
         image_data_url,
