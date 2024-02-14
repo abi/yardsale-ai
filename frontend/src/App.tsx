@@ -26,6 +26,27 @@ function App() {
     alert("Sign in");
   };
 
+  const downloadAsCsv = () => {
+    // Ignore the category for now
+    // ${listing?.category?.toUpperCase()}
+
+    const formatCsvValue = (value: string | undefined) =>
+      value?.replace(/,/g, "") || "";
+
+    const csv = `TITLE,PRICE,CONDITION,CATEGORY,DESCRIPTION\n${formatCsvValue(
+      listing?.title
+    )},${listing?.price},${formatCsvValue(
+      listing?.condition
+    )},,${formatCsvValue(listing?.description)}`;
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "listing.csv";
+    a.click();
+  };
+
   const analyze = async () => {
     const res = await customFetch(`${HTTP_BACKEND_URL}/analyze`, "POST", {
       imageUrl: testImageDataUrl,
@@ -101,6 +122,8 @@ function App() {
             </p>
           </div>
         )}
+
+        {listing && <Button onClick={downloadAsCsv}>Download CSV</Button>}
 
         <div>
           <button onClick={startCamera}>Start Camera</button>
