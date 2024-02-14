@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import "./App.css";
 import { Button } from "./components/ui/button";
 import { HTTP_BACKEND_URL } from "./config";
@@ -6,18 +6,11 @@ import { useAuthenticatedFetch } from "./hooks/useAuthenticatedFetch";
 import { useMediaLoader } from "./hooks/useMediaLoader";
 import AudioRecorder from "./components/media/AudioRecorder";
 import { useStore } from "./hooks/useStore";
-
-interface Listing {
-  title: string;
-  price: number;
-  condition: string;
-  category: string;
-  description: string;
-}
+import ExportAsCsv from "./components/ExportAsCsv";
 
 function App() {
-  const [listing, setListing] = useState<Listing | null>(null);
-
+  const listing = useStore((state) => state.listing);
+  const setListing = useStore((state) => state.setListing);
   const audioDataUrl = useStore((state) => state.audioDataUrl);
 
   // Video recording
@@ -30,27 +23,6 @@ function App() {
 
   const signIn = () => {
     alert("Sign in");
-  };
-
-  const downloadAsCsv = () => {
-    // Ignore the category for now
-    // ${listing?.category?.toUpperCase()}
-
-    const formatCsvValue = (value: string | undefined) =>
-      value?.replace(/,/g, "") || "";
-
-    const csv = `TITLE,PRICE,CONDITION,CATEGORY,DESCRIPTION\n${formatCsvValue(
-      listing?.title
-    )},${listing?.price},${formatCsvValue(
-      listing?.condition
-    )},,${formatCsvValue(listing?.description)}`;
-
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "listing.csv";
-    a.click();
   };
 
   const analyze = async () => {
@@ -131,7 +103,7 @@ function App() {
           </div>
         )}
 
-        {listing && <Button onClick={downloadAsCsv}>Download CSV</Button>}
+        {listing && <ExportAsCsv />}
 
         <AudioRecorder />
         <div>
