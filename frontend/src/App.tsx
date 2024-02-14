@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import "./App.css";
 import { Button } from "./components/ui/button";
 import { HTTP_BACKEND_URL } from "./config";
@@ -6,6 +6,9 @@ import { useAuthenticatedFetch } from "./hooks/useAuthenticatedFetch";
 
 function App() {
   const [listing, setListing] = useState("");
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
   const fetch = useAuthenticatedFetch();
 
   const signIn = () => {
@@ -25,6 +28,32 @@ function App() {
     setListing(res.response);
   };
 
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (error) {
+      console.error("Error accessing the camera", error);
+    }
+  };
+
+  const takePicture = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (video && canvas) {
+      const context = canvas.getContext("2d");
+      if (!context) {
+        return;
+      }
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const imageDataUrl = canvas.toDataURL("image/png");
+      // You can now use this imageDataUrl as the source for an image or to save the photo
+      console.log(imageDataUrl);
+    }
+  };
+
   return (
     <>
       <div className="w-full xl:w-[1000px] mx-auto mt-4">
@@ -42,6 +71,14 @@ function App() {
         </nav>
 
         <Button onClick={analyze}>Analyze</Button>
+
+        <div>
+          <button onClick={startCamera}>Start Camera</button>
+          <button onClick={takePicture}>Take Picture</button>
+          <video ref={videoRef} autoPlay style={{ width: "100%" }}></video>
+          <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
+        </div>
+
         <div>{listing}</div>
       </div>
     </>
