@@ -1,6 +1,8 @@
 from typing import Awaitable, Callable, List
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletionMessageParam, ChatCompletionChunk
+import httpx
+from io import BytesIO
 
 MODEL_GPT_4_VISION = "gpt-4-vision-preview"
 MODEL_GPT_4_TURBO_0125 = "gpt-4-0125-preview"
@@ -39,3 +41,26 @@ async def stream_openai_response(
     await client.close()
 
     return full_response
+
+
+async def transcribe(
+    audio_url: str,
+    api_key: str,
+    base_url: str | None,
+) -> str:
+
+    # Fetch the audio file
+    async with httpx.AsyncClient() as client:
+        response = await client.get(audio_url)
+        audio_data = response.content
+
+    # Convert bytes to a file-like object and extract the filename
+    # This is necessary for OpenAI to not throw an error
+    audio_file = BytesIO(audio_data)
+    filename = audio_url.split("/")[-1]
+
+    openai_client = AsyncOpenAI(api_key=api_key, base_url=base_url)
+    transcribed_audio = await openai_client.audio.transcriptions.create(
+        model="whisper-1", file=(filename, audio_file)
+    )
+    return transcribed_audio.text

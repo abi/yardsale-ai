@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 from llms.prompts.analysis import SYSTEM_PROMPT
 from config import OPENAI_API_KEY
-from llms.core import MODEL_GPT_4_TURBO_0125, stream_openai_response
+from llms.core import MODEL_GPT_4_TURBO_0125, stream_openai_response, transcribe
 from openai.types.chat import ChatCompletionMessageParam, ChatCompletionContentPartParam
 
 router = APIRouter()
@@ -91,16 +91,21 @@ async def analyze_item(item: dict[str, str]):
 
     # Params
     image_data_url = item["imageUrl"]
-    audio_description = item["audioDescription"]
+    audio_url = item["audioDescription"]
 
-    prompt_messages = generate_prompt(
-        image_data_url,
-        audio_description,
-    )
+    # Transcribe the audio description
+    transcribed_audio = await transcribe(audio_url, openai_api_key, openai_base_url)
+
+    print(transcribed_audio)
 
     async def process_chunk(chunk: str):
         print(chunk, end="", flush=True)
 
+    # Generate the listing based on the image and the transcribed audio
+    prompt_messages = generate_prompt(
+        image_data_url,
+        transcribed_audio,
+    )
     completion = await stream_openai_response(
         prompt_messages,
         api_key=openai_api_key,
