@@ -55,31 +55,31 @@ async def analyze_item(item: dict[str, str]):
     if not image_data_url:
         raise ValueError("Image data URL is not provided")
 
+    audio_description = item.get("audioDescription")
+    if not audio_description:
+        raise ValueError("Audio description is not provided")
+
     prompt_messages = generate_prompt(
         image_data_url,
-        """
-I bought this chair for $300, from Eames. I think it could still go for $100 since it's in good condition. 
-I'm selling it because I'm moving to a new place and I don't have space for it. 
-It's a great chair and I hope someone else can enjoy it as much as I did. 
-I think it's a good deal.
-""",
+        audio_description,
     )
 
     async def process_chunk(chunk: str):
         print(chunk, end="", flush=True)
 
-    await stream_openai_response(
+    completion = await stream_openai_response(
         prompt_messages,
         api_key=openai_api_key,
         base_url=openai_base_url,
         callback=lambda x: process_chunk(x),
     )
+    # Remove after testing
+    # completion = "Test"
 
     # Placeholder for item analysis logic
     # In a real scenario, you would implement the logic to analyze the item details
     # For now, we will just return a success message with the received item details
     return {
         "status": "success",
-        "message": "Item analysis is not implemented yet",
-        "item": item,
+        "response": completion,
     }
