@@ -4,6 +4,8 @@ import { Button } from "./components/ui/button";
 import { HTTP_BACKEND_URL } from "./config";
 import { useAuthenticatedFetch } from "./hooks/useAuthenticatedFetch";
 import { useMediaLoader } from "./hooks/useMediaLoader";
+import AudioRecorder from "./components/media/AudioRecorder";
+import { useStore } from "./hooks/useStore";
 
 interface Listing {
   title: string;
@@ -15,12 +17,16 @@ interface Listing {
 
 function App() {
   const [listing, setListing] = useState<Listing | null>(null);
+
+  const audioDataUrl = useStore((state) => state.audioDataUrl);
+
+  // Video recording
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const customFetch = useAuthenticatedFetch();
   const testImageDataUrl = useMediaLoader("/product_images/plant.jpg");
-  const testAudioDataUrl = useMediaLoader("/product_audios/plant.m4a");
+  // const testAudioDataUrl = useMediaLoader("/product_audios/plant.m4a");
 
   const signIn = () => {
     alert("Sign in");
@@ -48,9 +54,11 @@ function App() {
   };
 
   const analyze = async () => {
+    console.log(audioDataUrl);
+
     const res = await customFetch(`${HTTP_BACKEND_URL}/analyze`, "POST", {
       imageUrl: testImageDataUrl,
-      audioDescription: testAudioDataUrl,
+      audioDescription: audioDataUrl,
     });
 
     setListing(res.response);
@@ -125,9 +133,10 @@ function App() {
 
         {listing && <Button onClick={downloadAsCsv}>Download CSV</Button>}
 
+        <AudioRecorder />
         <div>
-          <button onClick={startCamera}>Start Camera</button>
-          <button onClick={takePicture}>Take Picture</button>
+          <Button onClick={startCamera}>Start Camera</Button>
+          <Button onClick={takePicture}>Take Picture</Button>
           <video ref={videoRef} autoPlay style={{ width: "100%" }}></video>
           <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
         </div>
