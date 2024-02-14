@@ -1,8 +1,9 @@
+import json
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 from llms.prompts.analysis import SYSTEM_PROMPT
 from config import OPENAI_API_KEY
-from llms.core import stream_openai_response
+from llms.core import MODEL_GPT_4_TURBO_0125, stream_openai_response
 from openai.types.chat import ChatCompletionMessageParam, ChatCompletionContentPartParam
 
 router = APIRouter()
@@ -42,6 +43,42 @@ def generate_prompt(image_data_url: str, user_description: str):
     return prompt_messages
 
 
+def generate_json_conversion_prompt(text: str):
+    prompt_messages: list[ChatCompletionMessageParam] = [
+        {
+            "role": "system",
+            "content": """
+Convert the following text to a structred JSON format.
+
+The JSON object has the following structure:
+{{
+    "title": string,
+    "price": float,
+    "condition": string,
+    "category": string,
+    "description": string
+}}
+
+Here is the text to convert:
+"""
+            + text,
+        },
+    ]
+
+    return prompt_messages
+
+
+from pydantic import BaseModel
+
+
+class MarketplaceListing(BaseModel):
+    title: str
+    price: float
+    condition: str
+    category: str
+    description: str
+
+
 @router.post("/analyze")
 async def analyze_item(item: dict[str, str]):
 
@@ -70,6 +107,23 @@ async def analyze_item(item: dict[str, str]):
         base_url=openai_base_url,
         callback=lambda x: process_chunk(x),
     )
+
+    # Convert the completion to a JSON object
+    completion = await stream_openai_response(
+        generate_json_conversion_prompt(completion),
+        api_key=openai_api_key,
+        base_url=openai_base_url,
+        callback=lambda x: process_chunk(x),
+        model=MODEL_GPT_4_TURBO_0125,
+        use_json_mode=True,
+    )
+
+    # Validate with the pydantic model
+    listing_json = json.loads(completion)
+    MarketplaceListing.model_validate(listing_json, strict=True)
+
+    # TODO: If validation fails, retry JSON conversion
+
     # Remove after testing
     # completion = "Test"
 
@@ -78,5 +132,5 @@ async def analyze_item(item: dict[str, str]):
     # For now, we will just return a success message with the received item details
     return {
         "status": "success",
-        "response": completion,
+        "response": listing_json,
     }

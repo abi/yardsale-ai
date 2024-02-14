@@ -4,8 +4,16 @@ import { Button } from "./components/ui/button";
 import { HTTP_BACKEND_URL } from "./config";
 import { useAuthenticatedFetch } from "./hooks/useAuthenticatedFetch";
 
+interface Listing {
+  title: string;
+  price: number;
+  condition: string;
+  category: string;
+  description: string;
+}
+
 function App() {
-  const [listing, setListing] = useState("");
+  const [listing, setListing] = useState<Listing | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -72,14 +80,30 @@ function App() {
 
         <Button onClick={analyze}>Analyze</Button>
 
+        {listing && (
+          <div className="bg-white shadow rounded-lg p-6">
+            <h3 className="text-xl font-bold mb-2">{listing.title}</h3>
+            <p className="text-lg text-gray-800">
+              Price: <span className="font-semibold">${listing.price}</span>
+            </p>
+            <p className="text-md text-gray-700">
+              Condition: <span className="italic">{listing.condition}</span>
+            </p>
+            <p className="text-md text-gray-700">
+              Category: <span className="italic">{listing.category}</span>
+            </p>
+            <p className="text-md text-gray-700">
+              Description: <span className="italic">{listing.description}</span>
+            </p>
+          </div>
+        )}
+
         <div>
           <button onClick={startCamera}>Start Camera</button>
           <button onClick={takePicture}>Take Picture</button>
           <video ref={videoRef} autoPlay style={{ width: "100%" }}></video>
           <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
         </div>
-
-        <div>{listing}</div>
       </div>
     </>
   );
