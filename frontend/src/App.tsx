@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { Button } from "./components/ui/button";
 import { HTTP_BACKEND_URL } from "./config";
 import { useAuthenticatedFetch } from "./hooks/useAuthenticatedFetch";
@@ -6,59 +5,28 @@ import { useMediaLoader } from "./hooks/useMediaLoader";
 import AudioRecorder from "./components/media/AudioRecorder";
 import { useStore } from "./hooks/useStore";
 import ExportAsCsv from "./components/ExportAsCsv";
+import { Camera } from "./components/media/Camera";
 
 function App() {
   const listing = useStore((state) => state.listing);
   const setListing = useStore((state) => state.setListing);
   const audioDataUrl = useStore((state) => state.audioDataUrl);
 
-  // Video recording
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  const customFetch = useAuthenticatedFetch();
   const testImageDataUrl = useMediaLoader("/product_images/plant.jpg");
   // const testAudioDataUrl = useMediaLoader("/product_audios/plant.m4a");
+
+  const fetch = useAuthenticatedFetch();
 
   const signIn = () => {
     alert("Sign in");
   };
 
   const analyze = async () => {
-    console.log(audioDataUrl);
-
-    const res = await customFetch(`${HTTP_BACKEND_URL}/analyze`, "POST", {
+    const res = await fetch(`${HTTP_BACKEND_URL}/analyze`, "POST", {
       imageUrl: testImageDataUrl,
       audioDescription: audioDataUrl,
     });
-
     setListing(res.response);
-  };
-
-  const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-    } catch (error) {
-      console.error("Error accessing the camera", error);
-    }
-  };
-
-  const takePicture = () => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    if (video && canvas) {
-      const context = canvas.getContext("2d");
-      if (!context) {
-        return;
-      }
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const imageDataUrl = canvas.toDataURL("image/png");
-      // You can now use this imageDataUrl as the source for an image or to save the photo
-      console.log(imageDataUrl);
-    }
   };
 
   return (
@@ -87,18 +55,7 @@ function App() {
               style={{ maxHeight: "200px" }}
             />
           </div>
-
-          <div>
-            <Button onClick={startCamera}>Start Camera</Button>
-            <Button onClick={takePicture}>Take Picture</Button>
-            <video
-              className="hidden"
-              ref={videoRef}
-              autoPlay
-              style={{ width: "100%" }}
-            ></video>
-            <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
-          </div>
+          <Camera />
         </div>
 
         <div className="flex flex-col mt-6">
