@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { FaPlay, FaStop } from "react-icons/fa";
+import { FaCamera, FaPlay, FaStop } from "react-icons/fa";
 import clsx from "clsx";
 import { useStore } from "../../hooks/useStore";
 
@@ -57,10 +57,17 @@ export function Camera() {
 
   return (
     <div>
-      <Button onClick={startCamera} className="flex gap-2">
+      <Button
+        onClick={startCamera}
+        className="flex gap-2 bg-slate-500 active:bg-slate-500"
+      >
         {isCameraOn ? <FaStop /> : <FaPlay />} {isCameraOn ? "Stop" : "Start"}
       </Button>
-      <Button onClick={takePicture}>Take Picture</Button>
+      {isCameraOn && (
+        <Button onClick={takePicture} className="flex gap-2 bg-green-400">
+          <FaCamera /> Take Picture
+        </Button>
+      )}
       <video
         ref={videoRef}
         autoPlay
