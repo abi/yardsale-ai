@@ -7,6 +7,7 @@ import ExportAsCsv from "./components/ExportAsCsv";
 import { Camera } from "./components/media/Camera";
 import { useToast } from "./components/ui/use-toast";
 import { useState } from "react";
+import Footer from "./components/LandingPage";
 
 function App() {
   const [logs, setLogs] = useState<string>("");
@@ -144,6 +145,8 @@ function App() {
         )}
 
         {listing && <ExportAsCsv />}
+
+        <Footer />
       </div>
     </>
   );
