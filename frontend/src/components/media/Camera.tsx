@@ -20,7 +20,7 @@ export function Camera() {
       // Turn on the camera
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
+          video: { facingMode: "environment" },
         });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -72,7 +72,9 @@ export function Camera() {
       )}
       <video
         ref={videoRef}
+        muted
         autoPlay
+        playsInline
         style={{ width: "100%" }}
         className={clsx({ hidden: !isCameraOn })}
       ></video>

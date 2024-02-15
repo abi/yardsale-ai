@@ -63,8 +63,9 @@ function App() {
       }
     };
 
-    websocket.onerror = (event) => {
-      console.error("WebSocket error observed:", event);
+    websocket.onerror = () => {
+      // TODO: Handle errors better
+      toast({ title: "WebSocket error observed" });
     };
   };
 
