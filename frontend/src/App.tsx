@@ -1,14 +1,17 @@
 import { Button } from "./components/ui/button";
-import { HTTP_BACKEND_URL, USE_TEST_PRODUCTS } from "./config";
-import { useAuthenticatedFetch } from "./hooks/useAuthenticatedFetch";
+import { USE_TEST_PRODUCTS, WS_BACKEND_URL } from "./config";
 import { useMediaLoader } from "./hooks/useMediaLoader";
 import AudioRecorder from "./components/media/AudioRecorder";
 import { useStore } from "./hooks/useStore";
 import ExportAsCsv from "./components/ExportAsCsv";
 import { Camera } from "./components/media/Camera";
 import { useToast } from "./components/ui/use-toast";
+import { useState } from "react";
 
 function App() {
+  const [logs, setLogs] = useState<string>("");
+  const [showLogs, setShowLogs] = useState<boolean>(true);
+
   const listing = useStore((state) => state.listing);
   const setListing = useStore((state) => state.setListing);
   const audioDataUrl = useStore((state) => state.audioDataUrl);
@@ -18,7 +21,6 @@ function App() {
   const testAudioDataUrl = useMediaLoader("/product_audios/plant.m4a");
 
   const { toast } = useToast();
-  const fetch = useAuthenticatedFetch();
 
   const signIn = () => {
     alert("Sign in");
@@ -44,11 +46,26 @@ function App() {
       });
     }
 
-    const res = await fetch(`${HTTP_BACKEND_URL}/analyze`, "POST", {
-      imageUrl,
-      audioDescription: audioUrl,
-    });
-    setListing(res.response);
+    const websocket = new WebSocket(WS_BACKEND_URL + "/analyze");
+
+    websocket.onopen = () => {
+      websocket.send(JSON.stringify({ imageUrl, audioDescription: audioUrl }));
+    };
+
+    websocket.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      const status = msg.status;
+      if (status === "processing") {
+        setLogs((prevLogs) => prevLogs + msg.response);
+      } else if (status === "success") {
+        setListing(msg.response);
+        setShowLogs(false);
+      }
+    };
+
+    websocket.onerror = (event) => {
+      console.error("WebSocket error observed:", event);
+    };
   };
 
   return (
@@ -87,6 +104,21 @@ function App() {
 
         <div className="flex flex-col mt-6">
           <Button onClick={analyze}>Analyze</Button>
+        </div>
+
+        <div className="mt-6">
+          <h2 className="text-xl font-bold pb-4">Logs</h2>
+          <button
+            onClick={() => setShowLogs(!showLogs)}
+            className="mb-2 text-sm font-semibold text-blue-600 hover:text-blue-800"
+          >
+            {showLogs ? "Hide Logs" : "Show Logs"}
+          </button>
+          {showLogs && (
+            <pre className="bg-gray-100 p-4 rounded-lg whitespace-pre-wrap">
+              {logs}
+            </pre>
+          )}
         </div>
 
         {listing && (

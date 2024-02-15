@@ -1,10 +1,10 @@
 import json
-from fastapi import APIRouter
+from fastapi import APIRouter, WebSocket
 from fastapi.responses import HTMLResponse
-from llms.prompts.analysis import SYSTEM_PROMPT
+from llms.prompts.generate import generate_json_conversion_prompt, generate_prompt
 from config import OPENAI_API_KEY
 from llms.core import MODEL_GPT_4_TURBO_0125, stream_openai_response, transcribe
-from openai.types.chat import ChatCompletionMessageParam, ChatCompletionContentPartParam
+from starlette import status
 
 router = APIRouter()
 
@@ -14,58 +14,6 @@ async def get_status():
     return HTMLResponse(
         content="<h3>Your backend is running correctly. Please open the front-end URL (default is http://localhost:5173) to use sell anything.</h3>"
     )
-
-
-def generate_prompt(image_data_url: str, user_description: str):
-    user_content: list[ChatCompletionContentPartParam] = [
-        {
-            "type": "image_url",
-            "image_url": {"url": image_data_url, "detail": "high"},
-        },
-        {
-            "type": "text",
-            "text": "Here is a transcribed audio description from the user:"
-            + user_description,
-        },
-    ]
-
-    prompt_messages: list[ChatCompletionMessageParam] = [
-        {
-            "role": "system",
-            "content": SYSTEM_PROMPT,
-        },
-        {
-            "role": "user",
-            "content": user_content,
-        },
-    ]
-
-    return prompt_messages
-
-
-def generate_json_conversion_prompt(text: str):
-    prompt_messages: list[ChatCompletionMessageParam] = [
-        {
-            "role": "system",
-            "content": """
-Convert the following text to a structred JSON format.
-
-The JSON object has the following structure:
-{{
-    "title": string,
-    "price": float,
-    "condition": string,
-    "category": string,
-    "description": string
-}}
-
-Here is the text to convert:
-"""
-            + text,
-        },
-    ]
-
-    return prompt_messages
 
 
 from pydantic import BaseModel
@@ -79,20 +27,34 @@ class MarketplaceListing(BaseModel):
     description: str
 
 
-@router.post("/analyze")
-async def analyze_item(item: dict[str, str]):
+@router.websocket("/analyze")
+async def analyze_item(websocket: WebSocket):
+
+    # Accept a connection from the client
+    await websocket.accept()
+
+    async def send_message(status: str, response: str):
+        await websocket.send_json(
+            {
+                "status": status,
+                "response": response,
+            }
+        )
 
     # OpenAI setup
     openai_api_key = OPENAI_API_KEY
     if not openai_api_key:
+        # TODO: Fix the error here
+        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
         raise ValueError("OpenAI API key is not set")
-
     openai_base_url = None
 
+    # Receive the parameters from the client's first message
+    params = await websocket.receive_json()
+
     # Params
-    # TODO: Rename these params
-    image_data_url = item["imageUrl"]
-    audio_data_url = item["audioDescription"]
+    image_data_url = params.get("imageUrl")
+    audio_data_url = params.get("audioDescription")
 
     # Transcribe the audio description
     transcribed_audio = await transcribe(
@@ -100,9 +62,11 @@ async def analyze_item(item: dict[str, str]):
     )
 
     print(transcribed_audio)
+    await send_message("processing", transcribed_audio)
 
     async def process_chunk(chunk: str):
         print(chunk, end="", flush=True)
+        await send_message("processing", chunk)
 
     # Generate the listing based on the image and the transcribed audio
     prompt_messages = generate_prompt(
@@ -132,13 +96,4 @@ async def analyze_item(item: dict[str, str]):
 
     # TODO: If validation fails, retry JSON conversion
 
-    # Remove after testing
-    # completion = "Test"
-
-    # Placeholder for item analysis logic
-    # In a real scenario, you would implement the logic to analyze the item details
-    # For now, we will just return a success message with the received item details
-    return {
-        "status": "success",
-        "response": listing_json,
-    }
+    await send_message("success", listing_json)
