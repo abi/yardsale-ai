@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { FaPlay } from "react-icons/fa";
+import { FaPlay, FaStop } from "react-icons/fa";
 import clsx from "clsx";
 
 export function Camera() {
@@ -10,15 +10,29 @@ export function Camera() {
   const [isCameraOn, setIsCameraOn] = useState(false);
 
   const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+    if (!isCameraOn) {
+      // Turn on the camera
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+        setIsCameraOn(true);
+      } catch (error) {
+        // TODO: Switch to toast
+        console.error("Error accessing the camera", error);
       }
-      setIsCameraOn(true);
-    } catch (error) {
-      // TODO: Switch to toast
-      console.error("Error accessing the camera", error);
+    } else {
+      if (videoRef.current && videoRef.current.srcObject) {
+        // TODO: Look into avoiding this cast
+        const stream = videoRef.current.srcObject as MediaStream;
+        const tracks = stream.getTracks();
+        tracks.forEach((track) => track.stop());
+        videoRef.current.srcObject = null;
+      }
+      setIsCameraOn(false);
     }
   };
 
@@ -39,10 +53,11 @@ export function Camera() {
       // TODO: Put the image URL in the store
     }
   };
+
   return (
     <div>
       <Button onClick={startCamera} className="flex gap-2">
-        <FaPlay /> Start
+        {isCameraOn ? <FaStop /> : <FaPlay />} {isCameraOn ? "Stop" : "Start"}
       </Button>
       <Button onClick={takePicture}>Take Picture</Button>
       <video
