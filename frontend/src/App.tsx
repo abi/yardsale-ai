@@ -27,6 +27,14 @@ function App() {
     alert("Sign in");
   };
 
+  const askForPermissions = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: true,
+    });
+    stream.getTracks().forEach((track) => track.stop());
+  };
+
   const analyze = async () => {
     let audioUrl = audioDataUrl;
     // If USE_TEST_PRODUCTS is true, use the test audio only if no audio was recorded
@@ -88,6 +96,8 @@ function App() {
             </div>
           </div>
         </nav>
+
+        <Button onClick={askForPermissions}>Ask for permissions</Button>
 
         {/* Photos section */}
         <div className="flex flex-col mt-6">
