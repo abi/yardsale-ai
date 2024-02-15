@@ -1,5 +1,4 @@
 import { useRef } from "react";
-import "./App.css";
 import { Button } from "./components/ui/button";
 import { HTTP_BACKEND_URL } from "./config";
 import { useAuthenticatedFetch } from "./hooks/useAuthenticatedFetch";
@@ -64,9 +63,9 @@ function App() {
 
   return (
     <>
-      <div className="w-full xl:w-[1000px] mx-auto mt-4">
+      <div className="w-full xl:w-[1000px] mx-auto mt-2 sm:mt-4 px-4">
         {/* Navbar */}
-        <nav className="border-b border-gray-200 px-4 py-2">
+        <nav className="border-b border-gray-200 py-2">
           <div className="flex justify-between items-center">
             <div className="text-lg font-semibold">Sell Anything</div>
             <div className="flex items-center space-x-4">
@@ -78,12 +77,40 @@ function App() {
           </div>
         </nav>
 
-        <img
-          src={testImageDataUrl}
-          alt="Example"
-          style={{ maxHeight: "200px" }}
-        />
-        <Button onClick={analyze}>Analyze</Button>
+        {/* Photos section */}
+        <div className="flex flex-col mt-6">
+          <h2 className="text-xl font-bold pb-4">1. Add photos</h2>
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <img
+              src={testImageDataUrl}
+              alt="Example 1"
+              style={{ maxHeight: "200px" }}
+            />
+          </div>
+
+          <div>
+            <Button onClick={startCamera}>Start Camera</Button>
+            <Button onClick={takePicture}>Take Picture</Button>
+            <video
+              className="hidden"
+              ref={videoRef}
+              autoPlay
+              style={{ width: "100%" }}
+            ></video>
+            <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
+          </div>
+        </div>
+
+        <div className="flex flex-col mt-6">
+          <h2 className="text-xl font-bold pb-4">
+            2. Talking about this product
+          </h2>
+          <AudioRecorder />
+        </div>
+
+        <div className="flex flex-col mt-6">
+          <Button onClick={analyze}>Analyze</Button>
+        </div>
 
         {listing && (
           <div className="bg-white shadow rounded-lg p-6">
@@ -104,14 +131,6 @@ function App() {
         )}
 
         {listing && <ExportAsCsv />}
-
-        <AudioRecorder />
-        <div>
-          <Button onClick={startCamera}>Start Camera</Button>
-          <Button onClick={takePicture}>Take Picture</Button>
-          <video ref={videoRef} autoPlay style={{ width: "100%" }}></video>
-          <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
-        </div>
       </div>
     </>
   );

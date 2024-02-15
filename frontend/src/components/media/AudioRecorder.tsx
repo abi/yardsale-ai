@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { Button } from "../ui/button";
 import { useStore } from "../../hooks/useStore";
+import { FaMicrophone, FaStopCircle } from "react-icons/fa";
 
 export default function AudioRecorder() {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
@@ -53,8 +54,12 @@ export default function AudioRecorder() {
 
   return (
     <div className="flex justify-center space-x-4 my-4">
-      <Button onClick={startRecording}>Record Audio</Button>
-      <Button onClick={stopRecording}>Stop Recording</Button>
+      <Button onClick={startRecording} className="flex gap-2 bg-red-500">
+        <FaMicrophone /> Record
+      </Button>
+      <Button onClick={stopRecording} className="flex gap-2 bg-black">
+        <FaStopCircle /> Stop
+      </Button>
     </div>
   );
 }
