@@ -6,6 +6,7 @@ import AudioRecorder from "./components/media/AudioRecorder";
 import { useStore } from "./hooks/useStore";
 import ExportAsCsv from "./components/ExportAsCsv";
 import { Camera } from "./components/media/Camera";
+import { useToast } from "./components/ui/use-toast";
 
 function App() {
   const listing = useStore((state) => state.listing);
@@ -16,6 +17,7 @@ function App() {
   const testImageDataUrl = useMediaLoader("/product_images/plant.jpg");
   const testAudioDataUrl = useMediaLoader("/product_audios/plant.m4a");
 
+  const { toast } = useToast();
   const fetch = useAuthenticatedFetch();
 
   const signIn = () => {
@@ -36,8 +38,10 @@ function App() {
     }
 
     if (!audioUrl || !imageUrl) {
-      // TODO: Show a toast
-      return;
+      return toast({
+        title: "Error",
+        description: "Please record an audio and take a picture",
+      });
     }
 
     const res = await fetch(`${HTTP_BACKEND_URL}/analyze`, "POST", {

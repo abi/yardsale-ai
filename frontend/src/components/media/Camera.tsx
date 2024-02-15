@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import { FaCamera, FaPlay, FaStop } from "react-icons/fa";
 import clsx from "clsx";
 import { useStore } from "../../hooks/useStore";
+import { useToast } from "../ui/use-toast";
 
 export function Camera() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -11,6 +12,8 @@ export function Camera() {
   const [isCameraOn, setIsCameraOn] = useState(false);
 
   const setImageDataUrls = useStore((state) => state.setImageDataUrls);
+
+  const { toast } = useToast();
 
   const startCamera = async () => {
     if (!isCameraOn) {
@@ -24,8 +27,7 @@ export function Camera() {
         }
         setIsCameraOn(true);
       } catch (error) {
-        // TODO: Switch to toast
-        console.error("Error accessing the camera", error);
+        toast({ title: "Error", description: "Error accessing the camera" });
       }
     } else {
       if (videoRef.current && videoRef.current.srcObject) {

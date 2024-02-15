@@ -1,4 +1,4 @@
-export const USE_TEST_PRODUCTS = true;
+export const USE_TEST_PRODUCTS = false;
 
 export const WS_BACKEND_URL =
   import.meta.env.VITE_WS_BACKEND_URL || "ws://127.0.0.1:7002";
