@@ -75,7 +75,10 @@ function App() {
         {/* Navbar */}
         <nav className="border-b border-gray-200 py-2">
           <div className="flex justify-between items-center">
-            <div className="text-lg font-semibold">Sell Anything</div>
+            <div className="flex gap-2 items-center">
+              <img src="/logo.svg" alt="Yardsale AI Logo" className="h-6 w-6" />
+              <div className="text-lg font-semibold">Yardsale AI</div>
+            </div>
             <div className="flex items-center space-x-4">
               <Button variant="secondary" onClick={signIn}>
                 Sign in
