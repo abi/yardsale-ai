@@ -33,6 +33,7 @@
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "vite-plugin-checker": "^0.6.4",
+    "vite-plugin-html": "^3.2.2",
     "zustand": "^4.5.0"
   },
   "devDependencies": {
