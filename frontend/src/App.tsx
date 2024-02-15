@@ -1,5 +1,5 @@
 import { Button } from "./components/ui/button";
-import { HTTP_BACKEND_URL } from "./config";
+import { HTTP_BACKEND_URL, USE_TEST_PRODUCTS } from "./config";
 import { useAuthenticatedFetch } from "./hooks/useAuthenticatedFetch";
 import { useMediaLoader } from "./hooks/useMediaLoader";
 import AudioRecorder from "./components/media/AudioRecorder";
@@ -11,9 +11,10 @@ function App() {
   const listing = useStore((state) => state.listing);
   const setListing = useStore((state) => state.setListing);
   const audioDataUrl = useStore((state) => state.audioDataUrl);
+  const imageDataUrls = useStore((state) => state.imageDataUrls);
 
   const testImageDataUrl = useMediaLoader("/product_images/plant.jpg");
-  // const testAudioDataUrl = useMediaLoader("/product_audios/plant.m4a");
+  const testAudioDataUrl = useMediaLoader("/product_audios/plant.m4a");
 
   const fetch = useAuthenticatedFetch();
 
@@ -22,9 +23,26 @@ function App() {
   };
 
   const analyze = async () => {
+    let audioUrl = audioDataUrl;
+    // If USE_TEST_PRODUCTS is true, use the test audio only if no audio was recorded
+    if (USE_TEST_PRODUCTS && !audioUrl) {
+      audioUrl = testAudioDataUrl;
+    }
+
+    // If USE_TEST_PRODUCTS is true, use the test image only if no image was recorded
+    let imageUrl = imageDataUrls.length > 0 ? imageDataUrls[0] : null;
+    if (USE_TEST_PRODUCTS && !imageUrl) {
+      imageUrl = testImageDataUrl;
+    }
+
+    if (!audioUrl || !imageUrl) {
+      // TODO: Show a toast
+      return;
+    }
+
     const res = await fetch(`${HTTP_BACKEND_URL}/analyze`, "POST", {
-      imageUrl: testImageDataUrl,
-      audioDescription: audioDataUrl,
+      imageUrl,
+      audioDescription: audioUrl,
     });
     setListing(res.response);
   };
@@ -49,11 +67,11 @@ function App() {
         <div className="flex flex-col mt-6">
           <h2 className="text-xl font-bold pb-4">1. Add photos</h2>
           <div className="grid grid-cols-2 gap-4 mb-4">
-            <img
-              src={testImageDataUrl}
-              alt="Example 1"
-              style={{ maxHeight: "200px" }}
-            />
+            {imageDataUrls.map((url, index) => (
+              <div key={index}>
+                <img src={url} alt={`Image`} style={{ maxHeight: "200px" }} />
+              </div>
+            ))}
           </div>
           <Camera />
         </div>

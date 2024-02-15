@@ -55,7 +55,15 @@ async def transcribe(
         # Extract the base64 encoded data
         base64_data = audio_url.split(",")[1]
         audio_data = base64.b64decode(base64_data)
-        filename = "transcription.webm"
+
+        # Extract the file format from the base64 data URL
+        file_format = audio_url.split(";")[0].split("/")[1]
+        if file_format == "mp4":
+            file_format = "m4a"
+
+        # Generate a filename for OpenAI
+        filename = f"transcription.{file_format}"
+
     else:
         # Fetch the audio file from a regular URL
         async with httpx.AsyncClient() as client:

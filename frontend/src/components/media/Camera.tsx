@@ -2,12 +2,15 @@ import { useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { FaPlay, FaStop } from "react-icons/fa";
 import clsx from "clsx";
+import { useStore } from "../../hooks/useStore";
 
 export function Camera() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   // <canvas> is used to take a picture
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isCameraOn, setIsCameraOn] = useState(false);
+
+  const setImageDataUrls = useStore((state) => state.setImageDataUrls);
 
   const startCamera = async () => {
     if (!isCameraOn) {
@@ -40,6 +43,7 @@ export function Camera() {
     const video = videoRef.current;
     const canvas = canvasRef.current;
     if (video && canvas) {
+      // Draw the video frame to the canvas and capture as an image
       const context = canvas.getContext("2d");
       if (!context) {
         return;
@@ -47,10 +51,7 @@ export function Camera() {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
       const imageDataUrl = canvas.toDataURL("image/png");
 
-      // You can now use this imageDataUrl as the source for an image or to save the photo
-      console.log(imageDataUrl);
-
-      // TODO: Put the image URL in the store
+      setImageDataUrls([imageDataUrl]);
     }
   };
 
