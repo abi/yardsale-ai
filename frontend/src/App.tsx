@@ -59,9 +59,7 @@ function App() {
         </div>
 
         <div className="flex flex-col mt-6">
-          <h2 className="text-xl font-bold pb-4">
-            2. Talking about this product
-          </h2>
+          <h2 className="text-xl font-bold pb-4">2. Talk about this product</h2>
           <AudioRecorder />
         </div>
 
