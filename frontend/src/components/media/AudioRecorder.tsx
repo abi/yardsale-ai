@@ -21,7 +21,10 @@ export default function AudioRecorder() {
       };
 
       newMediaRecorder.onstop = async () => {
-        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        const blob = new Blob(audioChunksRef.current, {
+          type: newMediaRecorder.mimeType,
+        });
+
         console.log(blob);
 
         // Read as Data URL (base64)

@@ -58,8 +58,11 @@ async def transcribe(
 
         # Extract the file format from the base64 data URL
         file_format = audio_url.split(";")[0].split("/")[1]
-        if file_format == "mp4":
-            file_format = "m4a"
+        # if file_format == "mp4":
+        #     file_format = "m4a"
+
+        print(audio_url[:100])
+        print(file_format)
 
         # Generate a filename for OpenAI
         filename = f"transcription.{file_format}"
