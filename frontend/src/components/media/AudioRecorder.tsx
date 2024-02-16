@@ -66,28 +66,21 @@ export default function AudioRecorder() {
 
   return (
     <>
-      <label className="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          checked={descriptionFormat === "audio"}
-          onChange={(e) =>
-            setDescriptionFormat(e.target.checked ? "audio" : "text")
-          }
-        />
-        <span>
-          {descriptionFormat === "audio" ? "I prefer text" : "I prefer audio"}
-        </span>
-      </label>
       {descriptionFormat === "audio" && (
         <div className="flex justify-center space-x-4 my-4">
-          <Button onClick={startRecording} className="flex gap-2 bg-red-500">
-            <FaMicrophone /> Record
-          </Button>
-          <Button onClick={stopRecording} className="flex gap-2 bg-black">
-            <FaStopCircle /> Stop
-          </Button>
+          {mediaRecorder?.state !== "recording" && (
+            <Button onClick={startRecording} className="flex gap-2 bg-red-500">
+              <FaMicrophone /> Record
+            </Button>
+          )}
+          {mediaRecorder?.state === "recording" && (
+            <Button onClick={stopRecording} className="flex gap-2 bg-black">
+              <FaStopCircle /> Stop
+            </Button>
+          )}
         </div>
       )}
+
       {descriptionFormat === "text" && (
         <Textarea
           placeholder="Audio description"
@@ -95,6 +88,17 @@ export default function AudioRecorder() {
           onChange={(e) => setDescriptionText(e.target.value)}
         />
       )}
+
+      {/* Switch to text toggle */}
+      <Button
+        variant="link"
+        className="text-sm text-gray-500"
+        onClick={() =>
+          setDescriptionFormat(descriptionFormat === "audio" ? "text" : "audio")
+        }
+      >
+        {descriptionFormat === "audio" ? "I prefer text" : "I prefer audio"}
+      </Button>
     </>
   );
 }
