@@ -19,7 +19,7 @@ interface StoreState {
 
   // Images of the product
   imageDataUrls: string[];
-  setImageDataUrls: (urls: string[]) => void;
+  addImage: (url: string) => void;
 
   // Generated Listing
   listing: Listing | null;
@@ -53,7 +53,8 @@ export const useStore = create<StoreState>((set) => ({
 
   // Images of the product
   imageDataUrls: [],
-  setImageDataUrls: (urls) => set({ imageDataUrls: urls }),
+  addImage: (url) =>
+    set((state) => ({ imageDataUrls: [...state.imageDataUrls, url] })),
 
   // Generated Listing
   listing: null,

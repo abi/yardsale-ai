@@ -8,14 +8,12 @@ export function Camera() {
   // <canvas> is used to take a picture
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const setImageDataUrls = useStore((state) => state.setImageDataUrls);
+  const addImage = useStore((state) => state.addImage);
 
   const { toast } = useToast();
 
   useEffect(() => {
     const startCamera = async () => {
-      //   if (!isCameraOn) {
-      // Turn on the camera
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: "environment" },
@@ -26,7 +24,6 @@ export function Camera() {
       } catch (error) {
         toast({ title: "Error", description: "Error accessing the camera" });
       }
-      //   }
     };
 
     startCamera();
@@ -44,7 +41,7 @@ export function Camera() {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
       const imageDataUrl = canvas.toDataURL("image/png");
 
-      setImageDataUrls([imageDataUrl]);
+      addImage(imageDataUrl);
     }
   };
 
