@@ -1,8 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Button } from "../ui/button";
+import { useEffect, useRef } from "react";
 import { FaCamera } from "react-icons/fa";
-//  FaPlay, FaStop
-import clsx from "clsx";
 import { useStore } from "../../hooks/useStore";
 import { useToast } from "../ui/use-toast";
 
@@ -10,9 +7,7 @@ export function Camera() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   // <canvas> is used to take a picture
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [isCameraOn, setIsCameraOn] = useState(true);
 
-  const next = useStore((s) => s.next);
   const setImageDataUrls = useStore((state) => state.setImageDataUrls);
 
   const { toast } = useToast();
@@ -28,7 +23,6 @@ export function Camera() {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
-        setIsCameraOn(true);
       } catch (error) {
         toast({ title: "Error", description: "Error accessing the camera" });
       }
@@ -36,7 +30,7 @@ export function Camera() {
     };
 
     startCamera();
-  }, [isCameraOn, toast]);
+  }, [toast]);
 
   const takePicture = () => {
     const video = videoRef.current;
@@ -55,28 +49,24 @@ export function Camera() {
   };
 
   return (
-    <div>
-      {/* <Button
-        onClick={startCamera}
-        className="flex gap-2 bg-slate-500 active:bg-slate-500"
-      >
-        {isCameraOn ? <FaStop /> : <FaPlay />} {isCameraOn ? "Stop" : "Start"}
-      </Button> */}
-      {isCameraOn && (
-        <Button onClick={takePicture} className="flex gap-2 bg-green-400">
-          <FaCamera /> Take Picture
-        </Button>
-      )}
+    <div className="flex flex-col justify-center items-center gap-y-4">
       <video
         ref={videoRef}
         muted
         autoPlay
         playsInline
         style={{ width: "100%" }}
-        className={clsx({ hidden: !isCameraOn })}
       ></video>
+
+      {/* Hidden element used for taking a picture */}
       <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
-      <Button onClick={next}>Done</Button>
+
+      <button
+        onClick={takePicture}
+        className="h-16 w-16 rounded-full bg-red-500 flex items-center justify-center text-white"
+      >
+        <FaCamera />
+      </button>
     </div>
   );
 }
