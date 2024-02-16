@@ -4,18 +4,39 @@ import { Button } from "../ui/button";
 import { FaCamera } from "react-icons/fa";
 import { useToast } from "../ui/use-toast";
 
+// TODO: Move to a separate utility file
+function captureImageFromVideo(
+  video: HTMLVideoElement | null,
+  canvas: HTMLCanvasElement | null
+) {
+  if (!video || !canvas) {
+    throw new Error("Video or canvas element is missing");
+  }
+
+  if (video && canvas) {
+    const context = canvas.getContext("2d");
+    if (!context) {
+      throw new Error("Canvas 2d context is missing");
+    }
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL("image/png");
+  }
+}
+
 export function CameraView() {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  // <canvas> is used to take a picture
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const imageDataUrls = useStore((state) => state.imageDataUrls);
   const [cancel, next, addImage] = useStore((s) => [
     s.cancel,
     s.next,
     s.addImage,
   ]);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  // <canvas> is used to take a picture
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
   const { toast } = useToast();
 
+  // Start the camera when the component mounts
   useEffect(() => {
     const startCamera = async () => {
       try {
@@ -33,25 +54,36 @@ export function CameraView() {
     startCamera();
   }, [toast]);
 
-  const takePicture = () => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    if (video && canvas) {
-      const context = canvas.getContext("2d");
-      if (!context) {
-        return;
-      }
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const imageDataUrl = canvas.toDataURL("image/png");
+  function cleanup() {
+    if (videoRef.current && videoRef.current.srcObject) {
+      console.log("cleaning up");
+      const stream = videoRef.current.srcObject as MediaStream;
+      const tracks = stream.getTracks();
+      tracks.forEach((track) => track.stop());
+      videoRef.current.srcObject = null;
+    }
+  }
 
-      addImage(imageDataUrl);
+  const takePicture = () => {
+    // TODO: More robust error handling here
+    const imageUrl = captureImageFromVideo(videoRef.current, canvasRef.current);
+    if (!imageUrl) {
+      toast({ title: "Error", description: "Error taking picture" });
+    } else {
+      addImage(imageUrl);
     }
   };
 
   return (
     <div className="flex flex-col mt-6">
       <div className="flex items-center justify-center w-full">
-        <span className="text-3xl font-bold cursor-pointer" onClick={cancel}>
+        <span
+          className="text-3xl font-bold cursor-pointer"
+          onClick={() => {
+            cleanup();
+            cancel();
+          }}
+        >
           x
         </span>
         <h2 className="text-xl font-bold pb-4 pl-2 text-center flex-1">
@@ -82,7 +114,14 @@ export function CameraView() {
           <FaCamera />
         </button>
       </div>
-      <Button onClick={next}>Done</Button>
+      <Button
+        onClick={() => {
+          cleanup();
+          next();
+        }}
+      >
+        Done
+      </Button>
     </div>
   );
 }
