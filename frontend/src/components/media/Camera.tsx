@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { FaCamera, FaPlay, FaStop } from "react-icons/fa";
+import { FaCamera } from "react-icons/fa";
+//  FaPlay, FaStop
 import clsx from "clsx";
 import { useStore } from "../../hooks/useStore";
 import { useToast } from "../ui/use-toast";
@@ -9,15 +10,16 @@ export function Camera() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   // <canvas> is used to take a picture
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [isCameraOn, setIsCameraOn] = useState(false);
+  const [isCameraOn, setIsCameraOn] = useState(true);
 
   const next = useStore((s) => s.next);
   const setImageDataUrls = useStore((state) => state.setImageDataUrls);
 
   const { toast } = useToast();
 
-  const startCamera = async () => {
-    if (!isCameraOn) {
+  useEffect(() => {
+    const startCamera = async () => {
+      //   if (!isCameraOn) {
       // Turn on the camera
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -30,17 +32,11 @@ export function Camera() {
       } catch (error) {
         toast({ title: "Error", description: "Error accessing the camera" });
       }
-    } else {
-      if (videoRef.current && videoRef.current.srcObject) {
-        // TODO: Look into avoiding this cast
-        const stream = videoRef.current.srcObject as MediaStream;
-        const tracks = stream.getTracks();
-        tracks.forEach((track) => track.stop());
-        videoRef.current.srcObject = null;
-      }
-      setIsCameraOn(false);
-    }
-  };
+      //   }
+    };
+
+    startCamera();
+  }, [isCameraOn, toast]);
 
   const takePicture = () => {
     const video = videoRef.current;
@@ -60,12 +56,12 @@ export function Camera() {
 
   return (
     <div>
-      <Button
+      {/* <Button
         onClick={startCamera}
         className="flex gap-2 bg-slate-500 active:bg-slate-500"
       >
         {isCameraOn ? <FaStop /> : <FaPlay />} {isCameraOn ? "Stop" : "Start"}
-      </Button>
+      </Button> */}
       {isCameraOn && (
         <Button onClick={takePicture} className="flex gap-2 bg-green-400">
           <FaCamera /> Take Picture

@@ -7,6 +7,7 @@ interface StoreState {
   // App state
   appState: AppState;
   next: () => void;
+  cancel: () => void;
 
   // Description of the product
   descriptionFormat: ProductDescriptionFormat;
@@ -39,6 +40,7 @@ export const useStore = create<StoreState>((set) => ({
       };
       return { appState: nextStateMap[state.appState] };
     }),
+  cancel: () => set({ appState: AppState.INITIAL }),
 
   // Description of the product
   descriptionFormat: "audio",

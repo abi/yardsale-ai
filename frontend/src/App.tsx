@@ -16,7 +16,11 @@ function App() {
   const [logs, setLogs] = useState<string>("");
   const [showLogs, setShowLogs] = useState<boolean>(true);
 
-  const [appState, next] = useStore((s) => [s.appState, s.next]);
+  const [appState, next, cancel] = useStore((s) => [
+    s.appState,
+    s.next,
+    s.cancel,
+  ]);
   const setListing = useStore((state) => state.setListing);
   const imageDataUrls = useStore((state) => state.imageDataUrls);
   const descriptionFormat = useStore((state) => state.descriptionFormat);
@@ -116,6 +120,11 @@ function App() {
                 </Button>
                 <Button onClick={signIn}>Get started</Button>
               </div>
+            )}
+            {appState !== AppState.INITIAL && (
+              <Button variant="secondary" onClick={cancel}>
+                Cancel
+              </Button>
             )}
           </div>
         </nav>
