@@ -26,7 +26,9 @@ const ExportAsCsv: React.FC = () => {
     a.click();
   };
 
-  return <Button onClick={downloadAsCsv}>Download CSV</Button>;
+  return (
+    <Button onClick={downloadAsCsv}>Export to Facebook Marketplace</Button>
+  );
 };
 
 export default ExportAsCsv;

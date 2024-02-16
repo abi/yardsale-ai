@@ -16,7 +16,7 @@ export function NavBar() {
           <div className="text-lg font-semibold">Yardsale AI</div>
         </div>
         {/* TODO: Only show this on landing page */}
-        {appState === AppState.RESULT && (
+        {appState === AppState.LANDING_PAGE && (
           <div className="flex items-center space-x-4">
             <Button variant="secondary" onClick={signIn}>
               Sign in

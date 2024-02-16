@@ -7,6 +7,7 @@ export interface Listing {
 }
 
 export enum AppState {
+  LANDING_PAGE = "LANDING_PAGE",
   INITIAL = "INITIAL",
   CAMERA = "CAMERA",
   PRODUCT_DESCRIPTION = "PRODUCT_DESCRIPTION",

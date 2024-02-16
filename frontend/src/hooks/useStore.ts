@@ -32,6 +32,7 @@ export const useStore = create<StoreState>((set) => ({
   next: () =>
     set((state) => {
       const nextStateMap = {
+        [AppState.LANDING_PAGE]: AppState.INITIAL, // TODO: Do we need this?
         [AppState.INITIAL]: AppState.CAMERA,
         [AppState.CAMERA]: AppState.PRODUCT_DESCRIPTION,
         [AppState.PRODUCT_DESCRIPTION]: AppState.PROCESSING,

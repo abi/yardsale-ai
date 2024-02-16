@@ -4,7 +4,7 @@ import ExportAsCsv from "../ExportAsCsv";
 export function ResultView() {
   const listing = useStore((state) => state.listing);
   return (
-    <>
+    <div className="flex-1">
       {listing && (
         <div className="bg-white shadow rounded-lg p-6">
           <h3 className="text-xl font-bold mb-2">{listing.title}</h3>
@@ -24,6 +24,15 @@ export function ResultView() {
       )}
 
       {listing && <ExportAsCsv />}
-    </>
+
+      <div>
+        <h2>Instructions</h2>
+        <p>
+          1. Click on the "Export as CSV" button to download the listing as a
+          CSV file. Then, go to Facebook Marketplace and click on "Sell
+          Something" and pick "Multiple Items".
+        </p>
+      </div>
+    </div>
   );
 }
