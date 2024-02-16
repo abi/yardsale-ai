@@ -1,9 +1,13 @@
 import { create } from "zustand";
-import { Listing } from "../types";
+import { AppState, Listing } from "../types";
 
 type ProductDescriptionFormat = "text" | "audio";
 
 interface StoreState {
+  // App state
+  appState: AppState;
+  next: () => void;
+
   // Description of the product
   descriptionFormat: ProductDescriptionFormat;
   setDescriptionFormat: (format: ProductDescriptionFormat) => void;
@@ -22,6 +26,20 @@ interface StoreState {
 }
 
 export const useStore = create<StoreState>((set) => ({
+  // App state
+  appState: AppState.INITIAL,
+  next: () =>
+    set((state) => {
+      const nextStateMap = {
+        [AppState.INITIAL]: AppState.CAMERA,
+        [AppState.CAMERA]: AppState.PRODUCT_DESCRIPTION,
+        [AppState.PRODUCT_DESCRIPTION]: AppState.PROCESSING,
+        [AppState.PROCESSING]: AppState.RESULT,
+        [AppState.RESULT]: AppState.RESULT, // Remain on RESULT state if it's already there
+      };
+      return { appState: nextStateMap[state.appState] };
+    }),
+
   // Description of the product
   descriptionFormat: "audio",
   setDescriptionFormat: (format) => set({ descriptionFormat: format }),

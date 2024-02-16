@@ -5,3 +5,11 @@ export interface Listing {
   category: string;
   description: string;
 }
+
+export enum AppState {
+  INITIAL = "INITIAL",
+  CAMERA = "CAMERA",
+  PRODUCT_DESCRIPTION = "PRODUCT_DESCRIPTION",
+  PROCESSING = "PROCESSING",
+  RESULT = "RESULT",
+}

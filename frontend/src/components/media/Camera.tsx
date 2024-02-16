@@ -11,6 +11,7 @@ export function Camera() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isCameraOn, setIsCameraOn] = useState(false);
 
+  const next = useStore((s) => s.next);
   const setImageDataUrls = useStore((state) => state.setImageDataUrls);
 
   const { toast } = useToast();
@@ -79,6 +80,7 @@ export function Camera() {
         className={clsx({ hidden: !isCameraOn })}
       ></video>
       <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
+      <Button onClick={next}>Done</Button>
     </div>
   );
 }

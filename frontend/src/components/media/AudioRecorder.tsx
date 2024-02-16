@@ -5,9 +5,10 @@ import { FaMicrophone, FaStopCircle } from "react-icons/fa";
 import { Textarea } from "../ui/textarea";
 
 export default function AudioRecorder() {
-  // Format
-  const descriptionFormat = useStore((state) => state.descriptionFormat);
-  const setDescriptionFormat = useStore((state) => state.setDescriptionFormat);
+  const [descriptionFormat, setDescriptionFormat] = useStore((s) => [
+    s.descriptionFormat,
+    s.setDescriptionFormat,
+  ]);
   // Text
   const descriptionText = useStore((state) => state.descriptionText);
   const setDescriptionText = useStore((state) => state.setDescriptionText);
