@@ -10,6 +10,7 @@ import { CameraView } from "./components/states/CameraView";
 import { ProductDescriptionView } from "./components/states/ProductDescriptionView";
 import { ProcessingView } from "./components/states/ProcessingView";
 import { ResultView } from "./components/states/ResultView";
+import { FaPlay } from "react-icons/fa";
 
 function App() {
   const [logs, setLogs] = useState<string>("");
@@ -99,7 +100,7 @@ function App() {
 
   return (
     <>
-      <div className="w-full xl:w-[1000px] mx-auto mt-2 sm:mt-4 px-4">
+      <div className="w-full xl:w-[1000px] mx-auto mt-2 sm:mt-4 px-4 min-h-screen flex flex-col">
         {/* Navbar */}
         <nav className="border-b border-gray-200 py-2">
           <div className="flex justify-between items-center">
@@ -107,17 +108,37 @@ function App() {
               <img src="/logo.svg" alt="Yardsale AI Logo" className="h-6 w-6" />
               <div className="text-lg font-semibold">Yardsale AI</div>
             </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="secondary" onClick={signIn}>
-                Sign in
-              </Button>
-              <Button onClick={signIn}>Get started</Button>
-            </div>
+            {/* TODO: Only show this on landing page */}
+            {appState === AppState.RESULT && (
+              <div className="flex items-center space-x-4">
+                <Button variant="secondary" onClick={signIn}>
+                  Sign in
+                </Button>
+                <Button onClick={signIn}>Get started</Button>
+              </div>
+            )}
           </div>
         </nav>
 
         {appState === AppState.INITIAL && (
-          <Button onClick={askForPermissions}>Ask for permissions</Button>
+          <div className="flex flex-col flex-1">
+            <h1 className="text-3xl font-bold mt-10 mb-10">
+              Let's craft the perfect Facebook marketplace listing in just a
+              couple of minutes.
+            </h1>
+            <h2 className="text-xl font-semibold mb-10">
+              Step 1: Capture a few pictures of your product <br /> Step 2: Talk
+              about the product <br />
+              Step 3: Your listing is ready!
+            </h2>
+            <Button
+              onClick={askForPermissions}
+              size="lg"
+              className="flex gap-x-2 text-xl"
+            >
+              Start <FaPlay />
+            </Button>
+          </div>
         )}
 
         {appState === AppState.CAMERA && <CameraView />}
