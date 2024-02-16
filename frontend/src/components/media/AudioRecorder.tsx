@@ -2,13 +2,21 @@ import { useState, useRef } from "react";
 import { Button } from "../ui/button";
 import { useStore } from "../../hooks/useStore";
 import { FaMicrophone, FaStopCircle } from "react-icons/fa";
+import { Textarea } from "../ui/textarea";
 
 export default function AudioRecorder() {
+  // Format
+  const descriptionFormat = useStore((state) => state.descriptionFormat);
+  const setDescriptionFormat = useStore((state) => state.setDescriptionFormat);
+  // Text
+  const descriptionText = useStore((state) => state.descriptionText);
+  const setDescriptionText = useStore((state) => state.setDescriptionText);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
+  // Audio
   const audioChunksRef = useRef<BlobPart[]>([]);
-  const setAudioDataUrl = useStore((state) => state.setAudioDataUrl);
+  const setDescriptionAudio = useStore((state) => state.setDescriptionAudio);
 
   const startRecording = async () => {
     try {
@@ -32,7 +40,7 @@ export default function AudioRecorder() {
         reader.readAsDataURL(blob);
         reader.onloadend = () => {
           const base64data = reader.result;
-          setAudioDataUrl(base64data as string);
+          setDescriptionAudio(base64data as string);
         };
 
         // Clear the chunks array
@@ -56,13 +64,36 @@ export default function AudioRecorder() {
   };
 
   return (
-    <div className="flex justify-center space-x-4 my-4">
-      <Button onClick={startRecording} className="flex gap-2 bg-red-500">
-        <FaMicrophone /> Record
-      </Button>
-      <Button onClick={stopRecording} className="flex gap-2 bg-black">
-        <FaStopCircle /> Stop
-      </Button>
-    </div>
+    <>
+      <label className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          checked={descriptionFormat === "audio"}
+          onChange={(e) =>
+            setDescriptionFormat(e.target.checked ? "audio" : "text")
+          }
+        />
+        <span>
+          {descriptionFormat === "audio" ? "I prefer text" : "I prefer audio"}
+        </span>
+      </label>
+      {descriptionFormat === "audio" && (
+        <div className="flex justify-center space-x-4 my-4">
+          <Button onClick={startRecording} className="flex gap-2 bg-red-500">
+            <FaMicrophone /> Record
+          </Button>
+          <Button onClick={stopRecording} className="flex gap-2 bg-black">
+            <FaStopCircle /> Stop
+          </Button>
+        </div>
+      )}
+      {descriptionFormat === "text" && (
+        <Textarea
+          placeholder="Audio description"
+          value={descriptionText}
+          onChange={(e) => setDescriptionText(e.target.value)}
+        />
+      )}
+    </>
   );
 }

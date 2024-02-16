@@ -15,8 +15,10 @@ function App() {
 
   const listing = useStore((state) => state.listing);
   const setListing = useStore((state) => state.setListing);
-  const audioDataUrl = useStore((state) => state.audioDataUrl);
+  const descriptionAudio = useStore((state) => state.descriptionAudio);
   const imageDataUrls = useStore((state) => state.imageDataUrls);
+  const descriptionFormat = useStore((state) => state.descriptionFormat);
+  const descriptionText = useStore((state) => state.descriptionText);
 
   const testImageDataUrl = useMediaLoader("/product_images/plant.jpg");
   const testAudioDataUrl = useMediaLoader("/product_audios/plant.m4a");
@@ -36,9 +38,10 @@ function App() {
   };
 
   const analyze = async () => {
-    let audioUrl = audioDataUrl;
-    // If USE_TEST_PRODUCTS is true, use the test audio only if no audio was recorded
-    if (USE_TEST_PRODUCTS && !audioUrl) {
+    let audioUrl = descriptionAudio;
+
+    // If USE_TEST_PRODUCTS is true and , use the test audio only if no audio was recorded
+    if (USE_TEST_PRODUCTS && descriptionFormat === "audio" && !audioUrl) {
       audioUrl = testAudioDataUrl;
     }
 
@@ -48,7 +51,11 @@ function App() {
       imageUrl = testImageDataUrl;
     }
 
-    if (!audioUrl || !imageUrl) {
+    if (
+      (descriptionFormat === "audio" && !audioUrl) ||
+      (descriptionFormat === "text" && !descriptionText) ||
+      !imageUrl
+    ) {
       return toast({
         title: "Error",
         description: "Please record an audio and take a picture",
@@ -58,7 +65,14 @@ function App() {
     const websocket = new WebSocket(WS_BACKEND_URL + "/analyze");
 
     websocket.onopen = () => {
-      websocket.send(JSON.stringify({ imageUrl, audioDescription: audioUrl }));
+      websocket.send(
+        JSON.stringify({
+          imageUrl,
+          descriptionAudio: audioUrl,
+          descriptionFormat: descriptionFormat,
+          descriptionText: descriptionText,
+        })
+      );
     };
 
     websocket.onmessage = (event) => {

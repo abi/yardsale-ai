@@ -54,12 +54,17 @@ async def analyze_item(websocket: WebSocket):
 
     # Params
     image_data_url = params.get("imageUrl")
-    audio_data_url = params.get("audioDescription")
+    product_description_format = params.get("descriptionFormat")
+    product_description_audio_data_url = params.get("descriptionAudio")
+    product_description_text = params.get("descriptionText")
 
     # Transcribe the audio description
-    transcribed_audio = await transcribe(
-        audio_data_url, openai_api_key, openai_base_url
-    )
+    if product_description_format == "audio":
+        transcribed_audio = await transcribe(
+            product_description_audio_data_url, openai_api_key, openai_base_url
+        )
+    else:
+        transcribed_audio = product_description_text
 
     print(transcribed_audio)
     await send_message("processing", transcribed_audio)
