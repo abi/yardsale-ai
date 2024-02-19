@@ -72,33 +72,40 @@ export function ProductDescriptionView({ analyze }: { analyze: () => void }) {
 
   return (
     <div className="flex flex-col flex-1">
-      <div className="flex flex-col mt-6">
-        <h2 className="text-xl font-bold pb-4">
-          One last step... talk about your product naturally.
-        </h2>
-        <div className="bg-white shadow rounded-lg p-4">
-          <h3 className="text-lg font-semibold text-gray-700">
-            Try to mention:
-          </h3>
-          <ul className="list-disc list-inside space-y-2">
-            <li className="text-gray-600">Brand</li>
-            <li className="text-gray-600">Age</li>
-            <li className="text-gray-600">Price you want to sell it for</li>
-            <li className="text-gray-600">Condition</li>
-          </ul>
-        </div>
+      <h2 className="text-2xl font-bold pb-4 mt-4">
+        Final step: Talk about your item like you would to a friend
+      </h2>
+
+      <div className="bg-white rounded-lg p-2">
+        <h3 className="text-lg font-semibold text-gray-700 mb-2">
+          Try to mention:
+        </h3>
+        <ul className="list-disc list-inside space-y-0.5">
+          <li className="text-gray-600 text-sm">Brand</li>
+          <li className="text-gray-600 text-sm">Age</li>
+          <li className="text-gray-600 text-sm">Price</li>
+          <li className="text-gray-600 text-sm">Condition</li>
+        </ul>
+      </div>
+
+      <div className="flex-1 flex flex-col items-center justify-center">
         {descriptionFormat === "audio" && (
-          <div className="flex justify-center space-x-4 my-4">
+          <div className="flex justify-center space-x-4 my-2">
             {mediaRecorder?.state !== "recording" && (
               <Button
                 onClick={startRecording}
-                className="flex gap-2 bg-red-500"
+                size="lg"
+                className="flex gap-2 bg-red-500 text-lg"
               >
                 <FaMicrophone /> Record
               </Button>
             )}
             {mediaRecorder?.state === "recording" && (
-              <Button onClick={stopRecording} className="flex gap-2 bg-black">
+              <Button
+                onClick={stopRecording}
+                size="lg"
+                className="flex gap-2 bg-black text-lg"
+              >
                 <FaStopCircle /> Stop
               </Button>
             )}
@@ -115,18 +122,20 @@ export function ProductDescriptionView({ analyze }: { analyze: () => void }) {
 
         <Button
           variant="link"
-          className="text-sm text-gray-500"
+          className="text-xs text-gray-400 underline"
           onClick={() =>
             setDescriptionFormat(
               descriptionFormat === "audio" ? "text" : "audio"
             )
           }
         >
-          {descriptionFormat === "audio" ? "I prefer text" : "I prefer audio"}
+          {descriptionFormat === "audio"
+            ? "I prefer to type"
+            : "I prefer to speak"}
         </Button>
       </div>
 
-      <div className="flex flex-col mt-6">
+      <div className="flex flex-col mb-10">
         <Button
           onClick={() => {
             cleanup();
