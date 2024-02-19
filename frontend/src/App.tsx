@@ -18,7 +18,9 @@ function App() {
   const [appState] = useStore((s) => [s.appState]);
 
   // Auth state
-  const { isSignedIn, isLoaded } = useUser();
+  const { isSignedIn, isLoaded } = IS_HOSTED
+    ? useUser()
+    : { isSignedIn: false, isLoaded: true };
 
   // Scroll to the top of the page when the view changes
   useScrollToTop();
