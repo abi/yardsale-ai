@@ -1,3 +1,5 @@
+export const IS_HOSTED = import.meta.env.VITE_IS_HOSTED === "true";
+
 export const USE_TEST_PRODUCTS =
   import.meta.env.VITE_USE_TEST_PRODUCTS === "true";
 

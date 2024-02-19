@@ -1,4 +1,4 @@
-import { USE_TEST_PRODUCTS, WS_BACKEND_URL } from "./config";
+import { IS_HOSTED, USE_TEST_PRODUCTS, WS_BACKEND_URL } from "./config";
 import { useMediaLoader } from "./hooks/useMediaLoader";
 import { useStore } from "./hooks/useStore";
 import { useToast } from "./components/ui/use-toast";
@@ -31,11 +31,13 @@ function App() {
   const testImageDataUrl = useMediaLoader("/product_images/plant.jpg");
   const testAudioDataUrl = useMediaLoader("/product_audios/plant.m4a");
 
-  useEffect(() => {
-    goToLandingPage();
-  }, [goToLandingPage]);
-
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (IS_HOSTED) {
+      goToLandingPage();
+    }
+  }, [goToLandingPage]);
 
   // Scroll to the top of the page when the view changes
   useEffect(() => {
