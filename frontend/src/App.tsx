@@ -11,12 +11,17 @@ import { ProcessingView } from "./components/states/ProcessingView";
 import { ResultView } from "./components/states/ResultView";
 import { NavBar } from "./components/NavBar";
 import { InitialView } from "./components/states/InitialView";
+import { LandingPageView } from "./components/states/LandingPageView";
 
 function App() {
   const [logs, setLogs] = useState<string>("");
   const [showLogs, setShowLogs] = useState<boolean>(true);
 
-  const [appState, next] = useStore((s) => [s.appState, s.next]);
+  const [appState, next, goToLandingPage] = useStore((s) => [
+    s.appState,
+    s.next,
+    s.goToLandingPage,
+  ]);
   const setListing = useStore((state) => state.setListing);
   const imageDataUrls = useStore((state) => state.imageDataUrls);
   const descriptionFormat = useStore((state) => state.descriptionFormat);
@@ -25,6 +30,10 @@ function App() {
 
   const testImageDataUrl = useMediaLoader("/product_images/plant.jpg");
   const testAudioDataUrl = useMediaLoader("/product_audios/plant.m4a");
+
+  useEffect(() => {
+    goToLandingPage();
+  }, [goToLandingPage]);
 
   const { toast } = useToast();
 
@@ -98,6 +107,7 @@ function App() {
         {appState !== AppState.CAMERA && <NavBar />}
 
         {/* Main content */}
+        {appState === AppState.LANDING_PAGE && <LandingPageView />}
         {appState === AppState.INITIAL && <InitialView />}
         {appState === AppState.CAMERA && <CameraView />}
         {appState === AppState.PRODUCT_DESCRIPTION && (

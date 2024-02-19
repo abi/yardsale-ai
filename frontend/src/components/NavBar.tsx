@@ -24,11 +24,12 @@ export function NavBar() {
             <Button onClick={signIn}>Get started</Button>
           </div>
         )}
-        {appState !== AppState.INITIAL && (
-          <Button variant="secondary" onClick={cancel}>
-            Cancel
-          </Button>
-        )}
+        {appState !== AppState.INITIAL &&
+          appState !== AppState.LANDING_PAGE && (
+            <Button variant="secondary" onClick={cancel}>
+              Cancel
+            </Button>
+          )}
       </div>
     </nav>
   );

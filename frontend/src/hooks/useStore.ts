@@ -8,6 +8,7 @@ interface StoreState {
   appState: AppState;
   next: () => void;
   cancel: () => void;
+  goToLandingPage: () => void;
 
   // Description of the product
   descriptionFormat: ProductDescriptionFormat;
@@ -29,6 +30,7 @@ interface StoreState {
 export const useStore = create<StoreState>((set) => ({
   // App state
   appState: AppState.INITIAL,
+  goToLandingPage: () => set({ appState: AppState.LANDING_PAGE }),
   next: () =>
     set((state) => {
       const nextStateMap = {
