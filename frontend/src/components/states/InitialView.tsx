@@ -16,15 +16,24 @@ export function InitialView() {
 
   return (
     <div className="flex flex-col flex-1">
-      <h1 className="text-3xl font-bold mt-10 mb-10">
-        Let's craft the perfect Facebook marketplace listing in just a couple of
-        minutes.
+      <div className="flex justify-center mt-20">
+        <span className="text-6xl">🏷️</span>
+      </div>
+      <h1 className="text-3xl leading-snug font-bold mt-4 mb-10 text-center">
+        Craft the perfect FB marketplace listing in under 2 mins.
       </h1>
-      <h2 className="text-xl font-semibold mb-10">
-        Step 1: Capture a few pictures of your product <br /> Step 2: Talk about
-        the product <br />
-        Step 3: Your listing is ready!
-      </h2>
+      <ol className="text-xl mb-12 space-y-4">
+        <li>
+          <span className="font-bold">Step 1:</span> 📸 Take 2-3 pics of your
+          product
+        </li>
+        <li>
+          <span className="font-bold">Step 2:</span> 🗣️ Talk about the product
+        </li>
+        <li>
+          <span className="font-bold">Step 3:</span> ✅ Your listing is ready!
+        </li>
+      </ol>
       <Button
         onClick={askForPermissions}
         size="lg"
