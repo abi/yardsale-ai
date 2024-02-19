@@ -3,8 +3,11 @@ import { Button } from "../ui/button";
 import { useStore } from "../../hooks/useStore";
 import { FaMicrophone, FaStopCircle } from "react-icons/fa";
 import { Textarea } from "../ui/textarea";
+import { useMediaLoader } from "../../hooks/useMediaLoader";
+import { USE_TEST_PRODUCTS, WS_BACKEND_URL } from "../../config";
+import { toast } from "../ui/use-toast";
 
-export function ProductDescriptionView({ analyze }: { analyze: () => void }) {
+export function ProductDescriptionView() {
   const [descriptionFormat, setDescriptionFormat] = useStore((s) => [
     s.descriptionFormat,
     s.setDescriptionFormat,
@@ -13,7 +16,18 @@ export function ProductDescriptionView({ analyze }: { analyze: () => void }) {
     s.descriptionText,
     s.setDescriptionText,
   ]);
-  const setDescriptionAudio = useStore((s) => s.setDescriptionAudio);
+  const [descriptionAudio, setDescriptionAudio] = useStore((s) => [
+    s.descriptionAudio,
+    s.setDescriptionAudio,
+  ]);
+  const imageDataUrls = useStore((state) => state.imageDataUrls);
+  const [next] = useStore((s) => [s.next]);
+
+  const addProcessingLogs = useStore((state) => state.addProcessingLogs);
+  const setListing = useStore((state) => state.setListing);
+
+  const testImageDataUrl = useMediaLoader("/product_images/plant.jpg");
+  const testAudioDataUrl = useMediaLoader("/product_audios/plant.m4a");
 
   // Local state
   const [stream, setStream] = useState<MediaStream | null>(null);
@@ -69,6 +83,62 @@ export function ProductDescriptionView({ analyze }: { analyze: () => void }) {
       tracks.forEach((track) => track.stop());
     }
   }
+
+  const analyze = async () => {
+    let audioUrl = descriptionAudio;
+
+    // If USE_TEST_PRODUCTS is true and , use the test audio only if no audio was recorded
+    if (USE_TEST_PRODUCTS && descriptionFormat === "audio" && !audioUrl) {
+      audioUrl = testAudioDataUrl;
+    }
+
+    // If USE_TEST_PRODUCTS is true, use the test image only if no image was recorded
+    let imageUrl = imageDataUrls.length > 0 ? imageDataUrls[0] : null;
+    if (USE_TEST_PRODUCTS && !imageUrl) {
+      imageUrl = testImageDataUrl;
+    }
+
+    if (
+      (descriptionFormat === "audio" && !audioUrl) ||
+      (descriptionFormat === "text" && !descriptionText) ||
+      !imageUrl
+    ) {
+      return toast({
+        title: "Error",
+        description: "Please record an audio and take a picture",
+      });
+    }
+
+    const websocket = new WebSocket(WS_BACKEND_URL + "/analyze");
+
+    websocket.onopen = () => {
+      websocket.send(
+        JSON.stringify({
+          imageUrl,
+          descriptionAudio: audioUrl,
+          descriptionFormat: descriptionFormat,
+          descriptionText: descriptionText,
+        })
+      );
+      next();
+    };
+
+    websocket.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      const status = msg.status;
+      if (status === "processing") {
+        addProcessingLogs(msg.response);
+      } else if (status === "success") {
+        setListing(msg.response);
+        next();
+      }
+    };
+
+    websocket.onerror = () => {
+      // TODO: Handle errors better
+      toast({ title: "WebSocket error observed" });
+    };
+  };
 
   return (
     <div className="flex flex-col flex-1">

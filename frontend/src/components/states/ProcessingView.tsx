@@ -1,12 +1,11 @@
-export function ProcessingView({
-  showLogs,
-  setShowLogs,
-  logs,
-}: {
-  showLogs: boolean;
-  setShowLogs: (show: boolean) => void;
-  logs: string;
-}) {
+import { useState } from "react";
+import { useStore } from "../../hooks/useStore";
+
+export function ProcessingView() {
+  const [showLogs, setShowLogs] = useState<boolean>(true);
+
+  const processingLogs = useStore((s) => s.processingLogs);
+
   return (
     <div className="mt-6">
       <h2 className="text-xl font-bold pb-4">Logs</h2>
@@ -18,7 +17,7 @@ export function ProcessingView({
       </button>
       {showLogs && (
         <pre className="bg-gray-100 p-4 rounded-lg whitespace-pre-wrap">
-          {logs}
+          {processingLogs}
         </pre>
       )}
     </div>

@@ -1,7 +1,6 @@
-import { useStore } from "../../hooks/useStore";
+import { SignUpButton } from "@clerk/clerk-react";
 
 export function LandingPageView() {
-  const [next] = useStore((s) => [s.next]);
   return (
     <div className="flex flex-col items-center justify-center h-full flex-1">
       <div className="mt-20">
@@ -10,12 +9,7 @@ export function LandingPageView() {
           The easiest way to sell your stuff on Facebook Marketplace. Generate a
           listing in under 2 minutes with just a few pictures.
         </p>
-        <button
-          onClick={next}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-        >
-          Start
-        </button>
+        <SignUpButton redirectUrl="/" />
       </div>
     </div>
   );

@@ -21,6 +21,8 @@ interface StoreState {
   // Images of the product
   imageDataUrls: string[];
   addImage: (url: string) => void;
+  processingLogs: string;
+  addProcessingLogs: (logs: string) => void;
 
   // Generated Listing
   listing: Listing | null;
@@ -57,6 +59,11 @@ export const useStore = create<StoreState>((set) => ({
   imageDataUrls: [],
   addImage: (url) =>
     set((state) => ({ imageDataUrls: [...state.imageDataUrls, url] })),
+
+  // Processing logs
+  processingLogs: "",
+  addProcessingLogs: (logs) =>
+    set((state) => ({ processingLogs: state.processingLogs + logs })),
 
   // Generated Listing
   listing: null,
