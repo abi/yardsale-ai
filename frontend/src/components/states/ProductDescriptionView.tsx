@@ -16,6 +16,7 @@ export function ProductDescriptionView({ analyze }: { analyze: () => void }) {
   const setDescriptionAudio = useStore((s) => s.setDescriptionAudio);
 
   // Local state
+  const [stream, setStream] = useState<MediaStream | null>(null);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
@@ -25,15 +26,15 @@ export function ProductDescriptionView({ analyze }: { analyze: () => void }) {
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const newMediaRecorder = new MediaRecorder(stream);
+      const mediaRecorder = new MediaRecorder(stream);
 
-      newMediaRecorder.ondataavailable = (e) => {
+      mediaRecorder.ondataavailable = (e) => {
         audioChunksRef.current.push(e.data);
       };
 
-      newMediaRecorder.onstop = async () => {
+      mediaRecorder.onstop = async () => {
         const blob = new Blob(audioChunksRef.current, {
-          type: newMediaRecorder.mimeType,
+          type: mediaRecorder.mimeType,
         });
 
         const reader = new FileReader();
@@ -46,8 +47,9 @@ export function ProductDescriptionView({ analyze }: { analyze: () => void }) {
         audioChunksRef.current = [];
       };
 
-      newMediaRecorder.start(1000);
-      setMediaRecorder(newMediaRecorder);
+      mediaRecorder.start(1000);
+      setMediaRecorder(mediaRecorder);
+      setStream(stream);
     } catch (error) {
       console.error("Error accessing the microphone", error);
     }
@@ -58,6 +60,15 @@ export function ProductDescriptionView({ analyze }: { analyze: () => void }) {
       mediaRecorder.stop();
     }
   };
+
+  function cleanup() {
+    stopRecording();
+
+    if (stream) {
+      const tracks = stream.getTracks();
+      tracks.forEach((track) => track.stop());
+    }
+  }
 
   return (
     <div className="flex flex-col flex-1">
@@ -116,7 +127,13 @@ export function ProductDescriptionView({ analyze }: { analyze: () => void }) {
       </div>
 
       <div className="flex flex-col mt-6">
-        <Button onClick={analyze} className="bg-blue-400">
+        <Button
+          onClick={() => {
+            cleanup();
+            analyze();
+          }}
+          className="bg-blue-400"
+        >
           Generate Listing 🪄
         </Button>
       </div>
