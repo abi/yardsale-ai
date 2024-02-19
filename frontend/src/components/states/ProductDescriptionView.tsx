@@ -114,7 +114,7 @@ export function ProductDescriptionView({ analyze }: { analyze: () => void }) {
 
         {descriptionFormat === "text" && (
           <Textarea
-            placeholder="Audio description"
+            placeholder="Describe your item..."
             value={descriptionText}
             onChange={(e) => setDescriptionText(e.target.value)}
           />

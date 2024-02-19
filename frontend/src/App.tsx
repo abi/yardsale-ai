@@ -2,7 +2,7 @@ import { USE_TEST_PRODUCTS, WS_BACKEND_URL } from "./config";
 import { useMediaLoader } from "./hooks/useMediaLoader";
 import { useStore } from "./hooks/useStore";
 import { useToast } from "./components/ui/use-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Footer from "./components/Footer";
 import { AppState } from "./types";
 import { CameraView } from "./components/states/CameraView";
@@ -27,6 +27,12 @@ function App() {
   const testAudioDataUrl = useMediaLoader("/product_audios/plant.m4a");
 
   const { toast } = useToast();
+
+  // Scroll to the top of the page when the view changes
+  useEffect(() => {
+    // Scroll to the top of the page
+    window.scrollTo(0, 0);
+  }, [appState]);
 
   const analyze = async () => {
     let audioUrl = descriptionAudio;
