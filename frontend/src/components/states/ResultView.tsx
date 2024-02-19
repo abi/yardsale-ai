@@ -1,8 +1,10 @@
 import { useStore } from "../../hooks/useStore";
-import ExportAsCsv from "../ExportAsCsv";
+import ExportButton from "../ExportButton";
 
 export function ResultView() {
   const listing = useStore((state) => state.listing);
+  const imageDataUrls = useStore((state) => state.imageDataUrls);
+
   return (
     <div className="flex-1">
       {listing && (
@@ -23,7 +25,22 @@ export function ResultView() {
         </div>
       )}
 
-      {listing && <ExportAsCsv />}
+      <div className="flex flex-col flex-1 items-center justify-center">
+        <h3 className="text-lg font-semibold text-gray-700 mb-2">Photos</h3>
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          {imageDataUrls.map((url, index) => (
+            <div key={index} className="max-w-xs">
+              <img
+                src={url}
+                alt={`Image ${index}`}
+                className="object-contain w-full h-auto"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {listing && <ExportButton />}
 
       <div>
         <h2>Instructions</h2>
