@@ -3,25 +3,7 @@ import { useStore } from "../../hooks/useStore";
 import { Button } from "../ui/button";
 import { FaCamera } from "react-icons/fa";
 import { useToast } from "../ui/use-toast";
-
-// TODO: Move to a separate utility file
-function captureImageFromVideo(
-  video: HTMLVideoElement | null,
-  canvas: HTMLCanvasElement | null
-) {
-  if (!video || !canvas) {
-    throw new Error("Video or canvas element is missing");
-  }
-
-  if (video && canvas) {
-    const context = canvas.getContext("2d");
-    if (!context) {
-      throw new Error("Canvas 2d context is missing");
-    }
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    return canvas.toDataURL("image/png");
-  }
-}
+import { captureImageFromVideo } from "../media/camera";
 
 export function CameraView() {
   const videoRef = useRef<HTMLVideoElement | null>(null);

@@ -1,7 +1,64 @@
-import AudioRecorder from "../media/AudioRecorder";
+import { useState, useRef } from "react";
 import { Button } from "../ui/button";
+import { useStore } from "../../hooks/useStore";
+import { FaMicrophone, FaStopCircle } from "react-icons/fa";
+import { Textarea } from "../ui/textarea";
 
 export function ProductDescriptionView({ analyze }: { analyze: () => void }) {
+  const [descriptionFormat, setDescriptionFormat] = useStore((s) => [
+    s.descriptionFormat,
+    s.setDescriptionFormat,
+  ]);
+  const [descriptionText, setDescriptionText] = useStore((s) => [
+    s.descriptionText,
+    s.setDescriptionText,
+  ]);
+  const setDescriptionAudio = useStore((s) => s.setDescriptionAudio);
+
+  // Local state
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
+    null
+  );
+  const audioChunksRef = useRef<BlobPart[]>([]);
+
+  // TODO: Move to a function in /media
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const newMediaRecorder = new MediaRecorder(stream);
+
+      newMediaRecorder.ondataavailable = (e) => {
+        audioChunksRef.current.push(e.data);
+      };
+
+      newMediaRecorder.onstop = async () => {
+        const blob = new Blob(audioChunksRef.current, {
+          type: newMediaRecorder.mimeType,
+        });
+
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+          const base64data = reader.result;
+          setDescriptionAudio(base64data as string);
+        };
+
+        audioChunksRef.current = [];
+      };
+
+      newMediaRecorder.start(1000);
+      setMediaRecorder(newMediaRecorder);
+    } catch (error) {
+      console.error("Error accessing the microphone", error);
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+    }
+  };
+
   return (
     <div className="flex flex-col flex-1">
       <div className="flex flex-col mt-6">
@@ -19,7 +76,43 @@ export function ProductDescriptionView({ analyze }: { analyze: () => void }) {
             <li className="text-gray-600">Condition</li>
           </ul>
         </div>
-        <AudioRecorder />
+        {descriptionFormat === "audio" && (
+          <div className="flex justify-center space-x-4 my-4">
+            {mediaRecorder?.state !== "recording" && (
+              <Button
+                onClick={startRecording}
+                className="flex gap-2 bg-red-500"
+              >
+                <FaMicrophone /> Record
+              </Button>
+            )}
+            {mediaRecorder?.state === "recording" && (
+              <Button onClick={stopRecording} className="flex gap-2 bg-black">
+                <FaStopCircle /> Stop
+              </Button>
+            )}
+          </div>
+        )}
+
+        {descriptionFormat === "text" && (
+          <Textarea
+            placeholder="Audio description"
+            value={descriptionText}
+            onChange={(e) => setDescriptionText(e.target.value)}
+          />
+        )}
+
+        <Button
+          variant="link"
+          className="text-sm text-gray-500"
+          onClick={() =>
+            setDescriptionFormat(
+              descriptionFormat === "audio" ? "text" : "audio"
+            )
+          }
+        >
+          {descriptionFormat === "audio" ? "I prefer text" : "I prefer audio"}
+        </Button>
       </div>
 
       <div className="flex flex-col mt-6">
