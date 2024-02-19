@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useStore } from "../../hooks/useStore";
 import { Button } from "../ui/button";
-import { FaCamera } from "react-icons/fa";
+import { FaCamera, FaTimes } from "react-icons/fa";
 import { useToast } from "../ui/use-toast";
 import { captureImageFromVideo } from "../media/camera";
 
@@ -47,6 +47,15 @@ export function CameraView() {
   }
 
   const takePicture = () => {
+    if (imageDataUrls.length >= 6) {
+      toast({
+        title: "Limit Reached",
+        description:
+          "You can't capture more photos. Please hit the 'Done' button to continue.",
+      });
+      return;
+    }
+
     // TODO: More robust error handling here
     const imageUrl = captureImageFromVideo(videoRef.current, canvasRef.current);
     if (!imageUrl) {
@@ -57,27 +66,18 @@ export function CameraView() {
   };
 
   return (
-    <div className="flex flex-col mt-6">
-      <div className="flex items-center justify-center w-full">
+    <div className="flex flex-col">
+      <div className="grid grid-cols-3 items-center w-full mt-2">
         <span
-          className="text-3xl font-bold cursor-pointer"
+          className="text-xl font-bold cursor-pointer text-gray-500 justify-self-start"
           onClick={() => {
             cleanup();
             cancel();
           }}
         >
-          x
+          <FaTimes />
         </span>
-        <h2 className="text-xl font-bold pb-4 pl-2 text-center flex-1">
-          Capture photos
-        </h2>
-      </div>
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        {imageDataUrls.map((url, index) => (
-          <div key={index}>
-            <img src={url} alt={`Image`} style={{ maxHeight: "200px" }} />
-          </div>
-        ))}
+        <h2 className="text-xl font-bold text-center">Take Pics</h2>
       </div>
       <div className="flex flex-col justify-center items-center gap-y-4">
         <video
@@ -101,9 +101,26 @@ export function CameraView() {
           cleanup();
           next();
         }}
+        className="mt-4"
       >
         Done
       </Button>
+      <div className="flex flex-col flex-1 items-center justify-center">
+        <h3 className="text-lg font-semibold text-gray-700 mb-2">
+          Captured Pics
+        </h3>
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          {imageDataUrls.map((url, index) => (
+            <div key={index} className="max-w-xs">
+              <img
+                src={url}
+                alt={`Image ${index}`}
+                className="object-contain w-full h-auto"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
