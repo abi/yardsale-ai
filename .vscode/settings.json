@@ -1,0 +1,20 @@
+{
+  "multiCommand.commands": [
+    {
+      "command": "multiCommand.startProject",
+      "sequence": [
+        "workbench.action.terminal.new",
+        "workbench.action.tasks.runTask",
+        {
+          "command": "workbench.action.tasks.runTask",
+          "args": "Run frontend"
+        },
+        "workbench.action.terminal.new",
+        {
+          "command": "workbench.action.tasks.runTask",
+          "args": "Run backend"
+        }
+      ]
+    }
+  ]
+}
