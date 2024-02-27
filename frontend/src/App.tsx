@@ -12,6 +12,7 @@ import { LandingPageView } from "./components/states/LandingPageView";
 import { useUser } from "@clerk/clerk-react";
 import FullPageSpinner from "./components/custom-ui/FullPageSpinner";
 import { useScrollToTop } from "./hooks/useScrollToTop";
+import { useBackendUser } from "./hooks/useBackendUser";
 
 function App() {
   // App state
@@ -21,6 +22,9 @@ function App() {
   const { isSignedIn, isLoaded } = IS_HOSTED
     ? useUser()
     : { isSignedIn: false, isLoaded: true };
+
+  // Get or create user in our backend
+  if (IS_HOSTED) useBackendUser();
 
   // Scroll to the top of the page when the view changes
   useScrollToTop();
@@ -34,7 +38,7 @@ function App() {
         {/* Navbar */}
         {appState !== AppState.CAMERA && <NavBar />}
 
-        {/* Clerk is loaded but user is not signed in, show landing page */}
+        {/* If Clerk is loaded but user is not signed in, show landing page */}
         {IS_HOSTED && !isSignedIn ? (
           <LandingPageView />
         ) : (

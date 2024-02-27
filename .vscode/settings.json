@@ -1,4 +1,6 @@
 {
+  "python.analysis.extraPaths": ["./backend"],
+  "python.autoComplete.extraPaths": ["./backend"],
   "multiCommand.commands": [
     {
       "command": "multiCommand.startProject",

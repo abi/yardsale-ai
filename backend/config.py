@@ -7,7 +7,15 @@ SHOULD_MOCK_AI_RESPONSE = bool(os.environ.get("SHOULD_MOCK_AI_RESPONSE", False))
 # Used as a feature flag to enable or disable certain features
 IS_PROD = os.environ.get("IS_PROD", False)
 
-# OpenAI API key
+# Database
+DB_DSN = os.environ.get("DB_DSN")
+
+# Clerk
+CLERK_DOMAIN = os.environ.get("CLERK_DOMAIN")
+CLERK_BACKEND_URL = os.environ.get("CLERK_BACKEND_URL")
+CLERK_SECRET_KEY = os.environ.get("CLERK_SECRET_KEY")
+
+# OpenAI
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 # Sentry configuration

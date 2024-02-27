@@ -1,4 +1,5 @@
-// import { useAuth } from "@clerk/clerk-react";
+import { useAuth } from "@clerk/clerk-react";
+import { HTTP_BACKEND_URL } from "../config";
 
 type FetchMethod = "GET" | "POST" | "PUT" | "DELETE";
 
@@ -6,15 +7,14 @@ type FetchMethod = "GET" | "POST" | "PUT" | "DELETE";
 // and assumes JSON responses
 // *If response code is not 200 OK or if there's any other error, throws an error
 export const useAuthenticatedFetch = () => {
-  // const { getToken } = useAuth();
+  const { getToken } = useAuth();
 
   const authenticatedFetch = async (
     url: string,
     method: FetchMethod = "GET",
     body: object | null | undefined = null
   ) => {
-    // const accessToken = await getToken();
-    const accessToken = "fake-token";
+    const accessToken = await getToken();
 
     if (!accessToken) return;
 
@@ -32,14 +32,14 @@ export const useAuthenticatedFetch = () => {
       options.body = JSON.stringify(body);
     }
 
-    const response = await fetch(url, options);
+    const fullUrl = new URL(url, HTTP_BACKEND_URL).toString();
+    const response = await fetch(fullUrl, options);
 
     if (!response.ok) {
       throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
     }
 
-    const json = await response.json();
-    return json;
+    return await response.json();
   };
 
   return authenticatedFetch;
