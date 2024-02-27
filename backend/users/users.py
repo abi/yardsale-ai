@@ -60,8 +60,13 @@ async def get_or_create_user(clerk_id: str) -> dict[str, str]:
                 user_email,
             )
 
+            if not user:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Failed to create user in DB",
+                )
+
         else:
             print("User found in DB")
 
-    user = dict(user)
-    return user
+    return dict(user)

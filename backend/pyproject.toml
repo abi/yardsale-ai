@@ -19,10 +19,10 @@ asyncpg-stubs = "^0.29.1"
 pyjwt = {extras = ["crypto"], version = "^2.8.0"}
 pre-commit = "^3.6.2"
 
-
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
-pyright = "^1.1.350"
+pyright = "^1.1.351"
+
 
 [build-system]
 requires = ["poetry-core"]
