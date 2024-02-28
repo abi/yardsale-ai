@@ -2,6 +2,8 @@
 
 Create a nice Facebook Marketplace listing for anything you own and want to sell. A simple app that uses GPT-4 Vision and Whisper to generate the listing.
 
+https://github.com/abi/yardsale-ai/assets/23818/26b68357-4815-4e33-989d-8dcbcf987b0c
+
 ## 🚀 Try It Out!
 
 [Try it here](https://yardsaleai.com) (while my budget allows, it's free to try). Or see [Getting Started](#-getting-started) below for local install instructions.
