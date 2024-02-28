@@ -38,7 +38,6 @@ export function CameraView() {
 
   function cleanup() {
     if (videoRef.current && videoRef.current.srcObject) {
-      console.log("cleaning up");
       const stream = videoRef.current.srcObject as MediaStream;
       const tracks = stream.getTracks();
       tracks.forEach((track) => track.stop());
