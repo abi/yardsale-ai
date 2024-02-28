@@ -4,7 +4,7 @@ Create a nice Facebook Marketplace listing for anything you own and want to sell
 
 ## 🚀 Try It Out!
 
-🆕 [Try it here](https://yardsaleai.com). Or see [Getting Started](#-getting-started) below for local install instructions.
+[Try it here](https://yardsaleai.com) (while my budget allows, it's free to try). Or see [Getting Started](#-getting-started) below for local install instructions.
 
 ## 🛠 Getting Started
 
