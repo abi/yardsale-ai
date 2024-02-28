@@ -29,9 +29,41 @@ interface StoreState {
   setListing: (listing: Listing | null) => void;
 }
 
-export const useStore = create<StoreState>((set) => ({
+// Define the initial state outside of the create function
+const initialState: Omit<
+  StoreState,
+  | "next"
+  | "cancel"
+  | "goToLandingPage"
+  | "setDescriptionFormat"
+  | "setDescriptionAudio"
+  | "setDescriptionText"
+  | "addImage"
+  | "addProcessingLogs"
+  | "setListing"
+> = {
   // App state
   appState: AppState.INITIAL,
+
+  // Description of the product
+  descriptionFormat: "audio",
+  descriptionAudio: null,
+  descriptionText: "",
+
+  // Images of the product
+  imageDataUrls: [],
+
+  // Processing logs
+  processingLogs: "",
+
+  // Generated Listing
+  listing: null,
+};
+
+export const useStore = create<StoreState>((set) => ({
+  ...initialState,
+
+  // App state
   goToLandingPage: () => set({ appState: AppState.LANDING_PAGE }),
   next: () =>
     set((state) => {
@@ -43,29 +75,31 @@ export const useStore = create<StoreState>((set) => ({
         [AppState.PROCESSING]: AppState.RESULT,
         [AppState.RESULT]: AppState.RESULT, // Remain on RESULT state if it's already there
       };
+
+      // Reset the state if we're getting out of the initial state
+      if (state.appState === AppState.INITIAL) {
+        set({
+          ...initialState,
+        });
+      }
+
       return { appState: nextStateMap[state.appState] };
     }),
   cancel: () => set({ appState: AppState.INITIAL }),
 
   // Description of the product
-  descriptionFormat: "audio",
   setDescriptionFormat: (format) => set({ descriptionFormat: format }),
-  descriptionAudio: null,
   setDescriptionAudio: (url) => set({ descriptionAudio: url }),
-  descriptionText: "",
   setDescriptionText: (text) => set({ descriptionText: text }),
 
   // Images of the product
-  imageDataUrls: [],
   addImage: (url) =>
     set((state) => ({ imageDataUrls: [...state.imageDataUrls, url] })),
 
   // Processing logs
-  processingLogs: "",
   addProcessingLogs: (logs) =>
     set((state) => ({ processingLogs: state.processingLogs + logs })),
 
   // Generated Listing
-  listing: null,
   setListing: (listing) => set({ listing }),
 }));
