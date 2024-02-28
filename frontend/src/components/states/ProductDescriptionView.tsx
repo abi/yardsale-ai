@@ -212,6 +212,10 @@ export function ProductDescriptionView() {
             analyze();
           }}
           className="bg-blue-400"
+          disabled={
+            (descriptionFormat === "audio" && !descriptionAudio) ||
+            (descriptionFormat === "text" && !descriptionText)
+          }
         >
           Generate Listing 🪄
         </Button>
