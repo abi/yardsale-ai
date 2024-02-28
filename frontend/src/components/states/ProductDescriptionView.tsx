@@ -5,7 +5,7 @@ import { FaMicrophone, FaStopCircle } from "react-icons/fa";
 import { Textarea } from "../ui/textarea";
 import { useMediaLoader } from "../../hooks/useMediaLoader";
 import { USE_TEST_PRODUCTS, WS_BACKEND_URL } from "../../config";
-import { toast } from "../ui/use-toast";
+import toast from "react-hot-toast";
 
 export function ProductDescriptionView() {
   const [descriptionFormat, setDescriptionFormat] = useStore((s) => [
@@ -103,10 +103,7 @@ export function ProductDescriptionView() {
       (descriptionFormat === "text" && !descriptionText) ||
       !imageUrl
     ) {
-      return toast({
-        title: "Error",
-        description: "Please record an audio and take a picture",
-      });
+      toast.error("Please record an audio and take a picture");
     }
 
     const websocket = new WebSocket(WS_BACKEND_URL + "/analyze");
@@ -136,7 +133,7 @@ export function ProductDescriptionView() {
 
     websocket.onerror = () => {
       // TODO: Handle errors better
-      toast({ title: "WebSocket error observed" });
+      toast.error("WebSocket error observed");
     };
   };
 

@@ -2,8 +2,8 @@ import { useEffect, useRef } from "react";
 import { useStore } from "../../hooks/useStore";
 import { Button } from "../ui/button";
 import { FaCamera, FaTimes } from "react-icons/fa";
-import { useToast } from "../ui/use-toast";
 import { captureImageFromVideo } from "../media/camera";
+import toast from "react-hot-toast";
 
 export function CameraView() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -16,8 +16,6 @@ export function CameraView() {
     s.addImage,
   ]);
 
-  const { toast } = useToast();
-
   // Start the camera when the component mounts
   useEffect(() => {
     const startCamera = async () => {
@@ -29,12 +27,12 @@ export function CameraView() {
           videoRef.current.srcObject = stream;
         }
       } catch (error) {
-        toast({ title: "Error", description: "Error accessing the camera" });
+        toast.error("Error accessing the camera");
       }
     };
 
     startCamera();
-  }, [toast]);
+  }, []);
 
   function cleanup() {
     if (videoRef.current && videoRef.current.srcObject) {
@@ -47,19 +45,21 @@ export function CameraView() {
 
   const takePicture = () => {
     if (imageDataUrls.length >= 6) {
-      toast({
-        title: "Limit Reached",
-        description:
-          "You can't capture more photos. Please hit the 'Done' button to continue.",
-      });
+      toast.error(
+        "You can't capture more photos. Please hit the 'Done' button to continue."
+      );
       return;
     }
 
     // TODO: More robust error handling here
     const imageUrl = captureImageFromVideo(videoRef.current, canvasRef.current);
+
     if (!imageUrl) {
-      toast({ title: "Error", description: "Error taking picture" });
+      toast.error("Error taking picture");
     } else {
+      toast("Nice shot!", {
+        icon: "📷",
+      });
       addImage(imageUrl);
     }
   };
@@ -88,12 +88,34 @@ export function CameraView() {
         ></video>
         {/* Hidden element used for taking a picture */}
         <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
-        <button
-          onClick={takePicture}
-          className="h-16 w-16 rounded-full bg-red-500 flex items-center justify-center text-white"
-        >
-          <FaCamera />
-        </button>
+
+        <div className="grid grid-cols-3 gap-4">
+          <div className="flex flex-col items-center justify-center w-full col-start-2">
+            <button
+              onClick={takePicture}
+              className="h-16 w-16 rounded-full bg-red-500 flex items-center justify-center text-white"
+            >
+              <FaCamera />
+            </button>
+          </div>
+
+          <div className="flex flex-col items-center justify-center w-full">
+            <h3 className="text-sm font-semibold text-gray-700 mb-2">
+              Captured Pics
+            </h3>
+            <div className="flex overflow-x-scroll gap-4 mb-4 w-full">
+              {imageDataUrls.map((url, index) => (
+                <div key={index} className="flex-none">
+                  <img
+                    src={url}
+                    alt={`Image ${index}`}
+                    className="object-contain max-w-[40px] h-auto"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
       <Button
         onClick={() => {
@@ -104,22 +126,6 @@ export function CameraView() {
       >
         Done
       </Button>
-      <div className="flex flex-col flex-1 items-center justify-center">
-        <h3 className="text-lg font-semibold text-gray-700 mb-2">
-          Captured Pics
-        </h3>
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          {imageDataUrls.map((url, index) => (
-            <div key={index} className="max-w-xs">
-              <img
-                src={url}
-                alt={`Image ${index}`}
-                className="object-contain w-full h-auto"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

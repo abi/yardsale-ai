@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { useToast } from "../components/ui/use-toast";
+import toast from "react-hot-toast";
 
 // Helper function to load a media file (image or audio from public folder) - used only for testing
 export function useMediaLoader(mediaPath: string): string {
   const [base64MediaUrl, setBase64MediaUrl] = useState<string>("");
-  const { toast } = useToast();
 
   useEffect(() => {
     fetch(mediaPath)
@@ -13,7 +12,7 @@ export function useMediaLoader(mediaPath: string): string {
         const reader = new FileReader();
         reader.onloadend = () => {
           if (!reader.result) {
-            toast({ title: "Error reading the media file" });
+            toast.error("Error reading the media file");
             return;
           }
 

@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { Toaster } from "./components/ui/toaster.tsx";
+import { Toaster } from "react-hot-toast";
 import { CLERK_PUBLISHABLE_KEY, IS_HOSTED } from "./config.ts";
 import { ClerkProvider } from "@clerk/clerk-react";
 
