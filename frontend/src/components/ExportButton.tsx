@@ -33,7 +33,11 @@ const ExportButton: React.FC = () => {
     a.download = "listing.zip";
     a.click();
   };
-  return <Button onClick={download}>Export to Facebook Marketplace</Button>;
+  return (
+    <Button size="lg" onClick={download}>
+      Download Listing
+    </Button>
+  );
 };
 
 export default ExportButton;

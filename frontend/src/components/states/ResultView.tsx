@@ -1,4 +1,5 @@
 import { useStore } from "../../hooks/useStore";
+import { URLS } from "../../urls";
 import ExportButton from "../ExportButton";
 
 export function ResultView() {
@@ -6,7 +7,8 @@ export function ResultView() {
   const imageDataUrls = useStore((state) => state.imageDataUrls);
 
   return (
-    <div className="flex-1">
+    <div className="flex-1 flex flex-col items-center justify-center">
+      <h2 className="text-2xl font-bold pb-4 mt-8">Your listing is ready!</h2>
       {listing && (
         <div className="bg-white shadow rounded-lg p-6">
           <h3 className="text-xl font-bold mb-2">{listing.title}</h3>
@@ -14,13 +16,14 @@ export function ResultView() {
             Price: <span className="font-semibold">${listing.price}</span>
           </p>
           <p className="text-md text-gray-700">
-            Condition: <span className="italic">{listing.condition}</span>
+            Condition:{" "}
+            <span className="font-semibold">{listing.condition}</span>
           </p>
           <p className="text-md text-gray-700">
-            Category: <span className="italic">{listing.category}</span>
+            Category: <span className="font-semibold">{listing.category}</span>
           </p>
           <p className="text-md text-gray-700">
-            Description: <span className="italic">{listing.description}</span>
+            Description: <span>{listing.description}</span>
           </p>
         </div>
       )}
@@ -42,13 +45,14 @@ export function ResultView() {
 
       {listing && <ExportButton />}
 
-      <div>
-        <h2>Instructions</h2>
-        <p>
-          1. Click on the "Export as CSV" button to download the listing as a
-          CSV file. Then, go to Facebook Marketplace and click on "Sell
-          Something" and pick "Multiple Items".
-        </p>
+      <div className="text-center text-sm mt-4 mb-10">
+        <a
+          href={URLS["fb-marketplace-instructions"]}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Show me instructions for uploading to Facebook Marketplace
+        </a>
       </div>
     </div>
   );
